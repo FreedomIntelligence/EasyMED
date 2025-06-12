@@ -1,6 +1,6 @@
 # EasyMED: Human or LLM as Standardized Patients? A Comparative Study for Medical Education
 
-![Project Banner](https://placehold.co/1200x400/3367d6/ffffff?text=EasyMED+Mult+Agent)
+![Project Banner](https://placehold.co/1200x400/3367d6/ffffff?text=EasyMED:+Multi+Agent)
 <p align="center">
   <a href="#-项目简介">项目简介</a> •
   <a href="#-核心功能">核心功能</a> •
