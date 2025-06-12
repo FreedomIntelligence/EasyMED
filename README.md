@@ -1,4 +1,4 @@
-# EasyMED: An LLM-Powered Framework for Clinical Skills Training
+# EasyMED: \textit{Human} or \textit{LLM} as Standardized Patients? \\ A Comparative Study for  Medical Education 
 # EasyMED：一个基于大语言模型的临床技能训练框架
 
 ![Project Banner](https://placehold.co/1200x400/3367d6/ffffff?text=Virtual+Standardized+Patient+Project)
