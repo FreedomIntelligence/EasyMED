@@ -23,7 +23,7 @@
 
 更重要的是，系统内置了基于LLM的智能评估模块，能够从多个维度对学生的临床表现进行综合分析和打分，提供客观的反馈，帮助他们识别知识盲区和技能短板。
 
-![实验设计流程图](https://placehold.co/800x300/f0f0f0/333333?text=Workflow:+Baseline+Test+->+Grouping+->+Intervention+(4+weeks)+->+Final+Exam)
+![实验设计流程图](/images/workflow.png)
 
 ## ✨ 核心功能 (Core Features)
 
