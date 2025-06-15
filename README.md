@@ -1,6 +1,6 @@
 # 🏥 EasyMED: Human or LLM as Standardized Patients? A Comparative Study for Medical Education
 
-![Project Banner](https://placehold.co/1200x100/3367d6/ffffff?text=EasyMED:+AI-Powered+Clinical+Training)
+![Project Banner](https://placehold.co/1200x200/3367d6/ffffff?text=EasyMED:+AI-Powered+Clinical+Training)
 
 <p align="center">
   <a href="#-项目简介-project-overview">项目简介</a> •
