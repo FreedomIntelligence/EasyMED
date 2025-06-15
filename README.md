@@ -3,14 +3,14 @@
 ![Project Banner](https://placehold.co/1200x200/3367d6/ffffff?text=EasyMED:+AI-Powered+Clinical+Training)
 
 <p align="center">
-  <a href="#-项目简介-project-overview">项目简介</a> •
-  <a href="#-核心功能-core-features">核心功能</a> •
-  <a href="#-研究目标-research-goal">研究目标</a> •
-  <a href="#-实验设计-experimental-design">实验设计</a> •
-  <a href="#-评估方法与指标-evaluation-methods--metrics">评估方法与指标</a> •
-  <a href="#-验证方式-Verification">验证方式</a> •
-  <a href="#-贡献-contributing">贡献</a> •
-</p>  
+  <a href="#-项目简介">项目简介</a> •  
+  <a href="#-核心功能">核心功能</a> •
+  <a href="#-研究目标">研究目标</a> •
+  <a href="#-实验设计">实验设计</a> •
+  <a href="#-评估方法与指标">评估方法与指标</a> •
+  <a href="#-验证方式">验证方式</a> •
+  <a href="#-贡献">贡献</a>
+</p>
 
 ---
 
