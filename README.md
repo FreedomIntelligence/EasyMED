@@ -3,18 +3,18 @@
 ![Project Banner](https://placehold.co/1200x200/3367d6/ffffff?text=EasyMED:+AI-Powered+Clinical+Training)
 
 <p align="center">
-  <a href="#-项目简介">项目简介</a> •  
-  <a href="#-核心功能">核心功能</a> •
-  <a href="#-研究目标">研究目标</a> •
-  <a href="#-实验设计">实验设计</a> •
-  <a href="#-评估方法与指标">评估方法与指标</a> •
-  <a href="#-验证方式">验证方式</a> •
-  <a href="#-贡献">贡献</a>
-</p>
+  <a href="#-项目简介-project-overview">项目简介</a> •
+  <a href="#-核心功能-core-features">核心功能</a> •
+  <a href="#-研究目标-research-goal">研究目标</a> •
+  <a href="#-实验设计-experimental-design">实验设计</a> •
+  <a href="#-评估方法与指标-evaluation-methods--metrics">评估方法与指标</a> •
+  <a href="#-验证方式-Verification">验证方式</a> •
+  <a href="#-贡献-contributing">贡献</a> •
+</p>  
 
 ---
 
-## 🔍 项目简介
+## 🔍 项目简介 (Project Overview)
 **EasyMED** 是一个基于大型语言模型 (LLM) 的高级AI软件，旨在通过模拟高度逼真的“标准病人”，为医学生提供一个可随时访问、标准化的临床技能练习平台。
 
 在传统的医学教育中，医学生依赖于有限的真人标准病人（Standardized Patients, SP）或与同学、老师扮演的病人进行练习，这些方式成本高、难以规模化，且评估标准可能不统一。我们的 **EasyMED** 系统通过AI技术，创建了一个虚拟的临床环境，让学生可以在**问诊、体格检查、辅助检查、诊断和治疗**等多个关键场景中，安全、反复地进行沉mersive练习。
@@ -50,7 +50,7 @@
 
 我们假设，EasyMED系统能够凭借其标准化、可重复、即时反馈的优势，成为一种有效、可扩展且成本效益高的临床技能教学辅助手段。
 
-## 🧪 实验设计
+## 🧪 实验设计 (Experimental Design)
 
 为了科学的回答上述研究问题，我们设计并实施了一个为期四周的教学对比实验，并评估以下两个关键评估维度：
 
@@ -112,7 +112,7 @@
 
 ---
 
-## 📊 评估指标与方法
+## 📊 评估指标与方法 (Evaluation Methods Metrics)
 
 ### ✅ 客观评估
 
@@ -136,7 +136,7 @@
 
 ---
 
-## 🔬 验证方式
+## 🔬 验证方式 (Verification)
 
 我们通过以下方式验证系统的效果与价值：
 
