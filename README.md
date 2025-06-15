@@ -7,7 +7,7 @@
   <a href="#-核心功能-core-features">核心功能</a> •
   <a href="#-研究目标-research-goal">研究目标</a> •
   <a href="#-实验设计-experimental-design">实验设计</a> •
-  <a href="#-评估方法与指标-evaluation-methods--metrics">评估方法与指标</a> •
+  <a href="#-评估方法与指标-evaluation-methods-metrics">评估方法与指标</a> •
   <a href="#-验证方式-Verification">验证方式</a> •
   <a href="#-贡献-contributing">贡献</a> •
 </p>  
