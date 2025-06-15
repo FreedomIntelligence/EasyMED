@@ -25,6 +25,8 @@
 
 ## ✨ 核心功能 (Core Features)
 
+![实验设计流程图](/images/workflow.png)  
+
 1.  **多场景临床模拟 (Multi-Scenario Clinical Simulation):**
     * **病史采集 (Clinical Consultation):** 学生可通过自然语言与AI病人进行对话，AI能够根据预设的病例脚本和LLM的推理能力，提供符合逻辑和医学常识的回答。
     * **体格检查 (Physical Examination):** 学生可以选择执行不同的体格检查项目，系统会以文本、图片或数据的形式返回相应的阳性或阴性体征。
