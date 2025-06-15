@@ -7,7 +7,7 @@
   <a href="#-核心功能-core-features">核心功能</a> •
   <a href="#-研究目标-research-goal">研究目标</a> •
   <a href="#-实验设计-experimental-design">实验设计</a> •
-  <a href="#-评估方法与指标-Evaluation-Methods-Metrics">评估方法与指标</a> •
+  <a href="#-评估方法与指标-evaluation-methods-metrics">评估方法与指标</a> •
   <a href="#-验证方式-Verification">验证方式</a> •
   <a href="#-贡献-contributing">贡献</a> •
 </p>  
@@ -167,5 +167,5 @@
 ---
 
 
-## 🤝 贡献 (Contributing)
+## 🤝 贡献 (Contributing)                   
 我们欢迎对本项目感兴趣的开发者、研究人员和临床专家进行贡献。如果您有任何建议或想要修复bug，请随时提交 Pull Request 或创建 Issue。
