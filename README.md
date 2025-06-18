@@ -144,7 +144,7 @@
   - 心理体验
 
 
-- 实验结束后，主要收集的反馈
+- 实验结束后，主要收集的反馈: (详细点击：[问卷前](https://eegb6fzscd.feishu.cn/wiki/CgO3wQ8Z5iN7vgkusgjcZymtnic))
 
 - 包括但不限于：
   - 背景信息
