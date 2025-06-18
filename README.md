@@ -133,7 +133,7 @@
 ### 📋 主观评估
 
 - 在**实验开始前**和**实验结束后**均采用**问卷调查**的方式进行收集反馈：
-- 实验开始前，主要收集的反馈：(详细点击：[问卷前](https://eegb6fzscd.feishu.cn/wiki/T7Nhws1Viisva9kF9hqcXgX2ned))
+- 实验开始前，主要收集的反馈：(详细点击：[实验前问卷](https://eegb6fzscd.feishu.cn/wiki/T7Nhws1Viisva9kF9hqcXgX2ned))
   
 - 包括但不限于：
   - 背景信息
@@ -144,7 +144,7 @@
   - 心理体验
 
 
-- 实验结束后，主要收集的反馈: (详细点击：[问卷前](https://eegb6fzscd.feishu.cn/wiki/CgO3wQ8Z5iN7vgkusgjcZymtnic))
+- 实验结束后，主要收集的反馈: (详细点击：[实验后问卷](https://eegb6fzscd.feishu.cn/wiki/CgO3wQ8Z5iN7vgkusgjcZymtnic))
 
 - 包括但不限于：
   - 背景信息
