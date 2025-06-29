@@ -1,3 +1,42 @@
+# 🏥 EasyMED: AI-Powered Clinical Skills Training Platform
+
+![EasyMED Project Banner](https://placehold.co/1200x250/3367d6/ffffff?text=EasyMED%3A+The+Future+of+Clinical+Education)
+
+<p align="center">
+  <em>An advanced AI tutor designed to revolutionize medical education by simulating realistic, standardized patient interactions.</em>
+</p>
+
+<p align="center">
+  <a href="#-项目简介">项目简介</a> •
+  <a href="#-核心功能">核心功能</a> •
+  <a href="#-研究与实验">研究与实验</a> •
+  <a href="#-技术实现">技术实现</a> •
+  <a href="#-如何贡献">如何贡献</a> •
+  <a href="#-如何引用">如何引用</a>
+</p>
+
+---
+
+## 🎯 项目简介 (Project Overview)
+
+**EasyMED** 是一个基于大型语言模型 (LLM) 的虚拟病人（Virtual Standardized Patient, VSP）系统。它旨在解决传统医学教育中真人标准化病人 (SP) 培训**成本高、规模小、一致性差**的核心痛点。
+
+通过本平台，医学生可以在一个安全、可重复的环境中，与高度逼真的AI病人进行互动，全面练习**临床问诊、体格检查、开具辅助检查、做出诊断、制定治疗方案**等一系列核心临床技能。
+
+我们的系统不仅是一个模拟器，更是一个智能导师。其内置的 **Clinical Reasoning Path Tracing and Evaluation (CR-PTE)** 框架能够自动评估学生的表现，提供即时、客观、数据驱动的反馈，帮助他们高效提升临床思维能力。
+
+---
+
+## ✨ 核心功能 (Core Features)
+
+- 💬 **自然语言对话问诊:** 与AI病人进行流畅、符合医学逻辑的自然语言交流。
+- 🩺 **多场景临床模拟:** 完整覆盖从接诊到治疗的五个核心环节。
+- 🔬 **动态检查报告生成:** 可开具血常规、X光等检查，系统会生成与病例匹配的动态报告。
+- 🤖 **智能化评估反馈:** 内置CR-PTE框架，对学生的临床推理路径进行自动分析与评分。
+- 📈 **数据驱动的教学洞察:** 记录并分析学习行为，为教育者提供教学优化的数据支持。
+
+---
+
 ## 🧪 研究与实验 (Research & Experiments)
 
 为了全面评估 EasyMED 系统的价值，我们设计并实施了一项单一、综合性的研究。本研究旨在通过一次严谨的对照实验，同时回答关于**系统有效性（Efficacy）**、**模拟逼真度（Realism）**和**评估可靠性（Reliability）**的多个核心问题。
@@ -48,4 +87,44 @@
     * **相关性分析：** 计算系统自动评分与专家评分之间的**皮尔逊相关系数 (Pearson correlation coefficient)**。
     * **一致性检验：** 分析两者在“病史采集完整性”、“诊断准确性”等细分维度上评分的一致性。
 
+---  
+
+## 🛠️ 技术实现 (How It Works)
+
+本项目的核心技术栈（待补充）:
+* **大语言模型 (LLM):** `Qwen2.5-Max` (用于意图识别)
+* **后端:** `Python`, `FastAPI`
+* **前端:** `Vue.js`, `TypeScript`
+* **数据库:** `PostgreSQL`
+
 ---
+
+## 🤝 如何贡献 (Contributing)
+
+我们热烈欢迎并感谢任何形式的贡献！无论您是开发者、研究人员还是临床专家，如果您对改进本项目有任何想法、建议或想要修复错误，请随时：
+* **Fork** 本仓库
+* 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
+* 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
+* 推送到分支 (`git push origin feature/AmazingFeature`)
+* **提交一个 Pull Request**
+
+---
+
+## 🎓 如何引用 (Citation)
+
+如果您在您的研究中使用了 EasyMED 或本文档，请引用我们的论文（待发表）：
+
+```bibtex
+@article{zhang2025easymed,
+  title={Human or LLM as Standardized Patients? A Comparative Study for Medical Education},
+  author={Zhang, Bingquan and Wang, Yuchi and Hu, Yan and Xie, Qianqian and Wang, Benyou},
+  journal={Preprint},
+  year={2025}
+}
+```
+
+---
+
+## 📜 许可证 (License)
+
+本项目采用 [MIT License](LICENSE.txt) 授权。
