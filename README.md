@@ -7,109 +7,121 @@
 </p>
 
 <p align="center">
-  <a href="#-项目简介">项目简介</a> •
-  <a href="#-核心功能">核心功能</a> •
-  <a href="#-研究与实验">研究与实验</a> •
-  <a href="#-技术实现">技术实现</a> •
-  <a href="#-如何贡献">如何贡献</a> •
-  <a href="#-如何引用">如何引用</a>
+  <a href="#-overview">Overview</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-research--experiments">Research & Experiments</a> •
+  <a href="#-how-it-works">How It Works</a> •
+  <a href="#-contributing">Contributing</a> •
+  <a href="#-citation">Citation</a>
 </p>
 
 ---
 
-## 🎯 项目简介 (Project Overview)
+## 🎯 Overview
 
-**EasyMED** 是一个基于大型语言模型 (LLM) 的虚拟病人（Virtual Standardized Patient, VSP）系统。它旨在解决传统医学教育中真人标准化病人 (SP) 培训**成本高、规模小、一致性差**的核心痛点。
+**EasyMED** is a Virtual Standardized Patient (VSP) system powered by Large Language Models (LLMs). It is designed to address the core challenges of traditional medical training using human Standardized Patients (SPs), namely **high costs, poor scalability, and a lack of consistency**.
 
-通过本平台，医学生可以在一个安全、可重复的环境中，与高度逼真的AI病人进行互动，全面练习**临床问诊、体格检查、开具辅助检查、做出诊断、制定治疗方案**等一系列核心临床技能。
+Our platform provides medical students with a safe and repeatable environment to practice a full range of core clinical skills by interacting with highly realistic AI patients. This includes **clinical consultation, physical examination, ordering ancillary tests, making a diagnosis, and formulating a treatment plan**.
 
-我们的系统不仅是一个模拟器，更是一个智能导师。其内置的 **Clinical Reasoning Path Tracing and Evaluation (CR-PTE)** 框架能够自动评估学生的表现，提供即时、客观、数据驱动的反馈，帮助他们高效提升临床思维能力。
-
----
-
-## ✨ 核心功能 (Core Features)
-
-- 💬 **自然语言对话问诊:** 与AI病人进行流畅、符合医学逻辑的自然语言交流。
-- 🩺 **多场景临床模拟:** 完整覆盖从接诊到治疗的五个核心环节。
-- 🔬 **动态检查报告生成:** 可开具血常规、X光等检查，系统会生成与病例匹配的动态报告。
-- 🤖 **智能化评估反馈:** 内置CR-PTE框架，对学生的临床推理路径进行自动分析与评分。
-- 📈 **数据驱动的教学洞察:** 记录并分析学习行为，为教育者提供教学优化的数据支持。
+More than just a simulator, EasyMED is an intelligent tutor. Its built-in **Clinical Reasoning Path Tracing and Evaluation (CR-PTE)** framework automatically assesses student performance, providing instant, objective, and data-driven feedback to help them efficiently improve their clinical reasoning skills.
 
 ---
 
-## 🧪 研究与实验 (Research & Experiments)
+## ✨ Features
 
-为了全面评估 EasyMED 系统的价值，我们设计并实施了一项单一、综合性的研究。本研究旨在通过一次严谨的对照实验，同时回答关于**系统有效性（Efficacy）**、**模拟逼真度（Realism）**和**评估可靠性（Reliability）**的多个核心问题。
+- 💬 **Natural Language Consultation:** Engage in fluid, medically logical conversations with AI patients.
+- 🩺 **Multi-Scenario Clinical Simulation:** Covers the five core stages of a clinical encounter, from consultation to treatment.
+- 🔬 **Dynamic Lab & Imaging Generation:** Order tests like a complete blood count (CBC) or X-rays, and the system will generate dynamic reports that match the case's pathophysiology.
+- 🤖 **Intelligent Assessment & Feedback:** The built-in CR-PTE framework automatically analyzes and scores a student's clinical reasoning path.
+- 📈 **Data-Driven Educational Analytics:** Logs and analyzes learning behaviors to provide educators with insights for curriculum optimization.
 
-> **核心研究问题：** 与传统的人类标准化病人相比，由LLM驱动的EasyMED能否成为一种更有效、更可靠、且广受欢迎的临床技能训练方案？
+---
 
-### **实验设计与流程 (Experimental Design & Procedure)**
+## 🧪 Research & Experiments
 
-为了最有效地比较两种训练方法的优劣，我们采用了一种严谨的 **双周期交叉设计 (Two-Period Crossover Design)**。这种设计让每位参与者都能体验到 EasyMED 和真人SP两种模式，从而充当其自身的对照，使比较结果更为可靠。
+To comprehensively evaluate the value of EasyMED, we designed and implemented a single, integrated study. This rigorous controlled experiment aims to simultaneously answer key questions regarding the system's **Efficacy**, **Realism**, and **Reliability**.
 
-* **参与者与基线评估 (Participants & Baseline):**
-    * 我们招募了 **20名** 已完成理论学习但尚未通过临床技能考试的医学生。
-    * 在实验开始前，所有参与者都参加了一次**基线前测 (Baseline Pre-test)**，以评估其初始临床技能水平。
-    * 随后，我们根据前测成绩，将他们随机分配到两个小组：A组 (n=10) 和 B组 (n=10)。
+> **Core Research Question:** Compared to traditional human SPs, can the LLM-driven EasyMED serve as a more effective, reliable, and well-received alternative for clinical skills training?
 
-* **双周期交叉流程 (Two-Period Crossover Procedure):**
-    整个实验为期四周，分为两个周期，每个周期结束后都进行一次全面的技能测试 。
+### **Experimental Design & Procedure**
 
-| 时期 | 周期时长 | A组 (n=10) 的训练方式 | B组 (n=10) 的训练方式 |
+To most effectively compare the two training methods, we employed a rigorous **Two-Period Crossover Design**. This design allows each participant to experience both the EasyMED and human SP modalities, thereby serving as their own control and making the results more reliable.
+
+* **Participants & Baseline:**
+    * We recruited **20 medical students** who had completed their theoretical coursework but had not yet passed the national clinical skills examination.
+    * Prior to the experiment, all participants took a **Baseline Pre-test** to assess their initial skill level.
+    * Based on the pre-test scores, participants were randomly assigned to two balanced groups using a matched-pairs methodology: Group A (n=10) and Group B (n=10).
+
+* **Two-Period Crossover Procedure:**
+    The entire experiment lasted four weeks and was divided into two periods. A comprehensive skills assessment was conducted after each period.
+
+| Period | Duration | Group A (n=10) Training Method | Group B (n=10) Training Method |
 | :--- | :--- | :--- | :--- |
-| **周期一** | **前两周** | 🤖 **使用 EasyMED 系统** | 🧑‍⚕️ **与真人SP练习** |
-| *中期测试* | *第二周结束时* | \- | *所有20名参与者参加第一次能力测试* |
-| **周期二** | **后两周** | 🧑‍⚕️ **与真人SP练习** (交叉) | 🤖 **使用 EasyMED 系统** (交叉) |
-| *最终测试* | *第四周结束时* | \- | *所有20名参与者参加第二次能力测试* |
+| **Period 1** | First 2 Weeks | 🤖 **Trains with the EasyMED System** | 🧑‍⚕️ **Trains with a Human SP** |
+| *Mid-Experiment Test* | End of Week 2 | \- | *All 20 participants take the first clinical skills assessment* |
+| **Period 2** | Last 2 Weeks | 🧑‍⚕️ **Trains with a Human SP** (Crossover) | 🤖 **Trains with the EasyMED System** (Crossover) |
+| *Final Test* | End of Week 4 | \- | *All 20 participants take the final clinical skills assessment* |
 
-* **盲法评估 (Blinded Assessment):**
-    * 在中期和最终的所有技能测试中，负责评分的外部专家考官均**不知晓学生在此期间接受了何种训练方式**。这确保了评估结果的绝对客观与公正。
+* **Blinded Assessment:**
+    * All mid-experiment and final skills assessments were scored by external expert examiners who were **blinded to the training modality each student received** during the respective period. This ensures the absolute objectivity and fairness of the evaluation.
 
----
-### **多维度数据分析 (Multi-Faceted Data Analysis)**
+### **Multi-Faceted Data Analysis**
 
-在实验结束后，我们利用收集到的丰富数据，从以下三个关键维度进行了深入分析：
+After the experiment, we conducted an in-depth analysis of the rich data we collected across three key dimensions:
 
-#### **1. 教学有效性分析 (Efficacy Analysis)**
+#### **1. Efficacy Analysis**
 
-* **目标：** 检验 EasyMED 在提升医学生临床技能方面的实际效果。
-* **方法：**
-    * **主要指标：** 对比实验组与对照组在最终后测中的**技能增益分数 (Gain Score = Post-test - Pre-test)**。
-    * **统计检验：** 使用独立样本t检验，分析两组间的差异是否具有统计学意义。
-    * **主观反馈：** 分析前后测问卷中，学生对自身能力信心的变化。
+* **Objective:** To determine the actual effectiveness of EasyMED in improving the clinical skills of medical students.
+* **Methods:**
+    * **Primary Metric:** Compared the **Gain Score (Post-test - Pre-test)** on clinical skills assessments between the two groups.
+    * **Statistical Test:** Used an independent samples t-test to analyze if the difference between groups was statistically significant.
+    * **Subjective Feedback:** Analyzed changes in students' self-reported confidence from pre- and post-experiment questionnaires.
 
-#### **2. 模拟逼真度与一致性分析 (Realism & Consistency Analysis)**
+#### **2. Realism & Consistency Analysis**
 
-* **目标：** 评估 EasyMED (VSP) 在模拟对话时，与真人SP的相似程度。
-* **方法：**
-    * 我们从实验过程中抽取A组（与VSP交互）和B组（与真人SP交互）的对话记录。
-    * **语义一致性：** 使用 Sentence-BERT 等模型计算 VSP 与真人SP 在相同上下文中的回复内容的语义相似度。
-    * **交互模式：** 对比两组对话的平均**交互轮次**和**回复长度**，分析其在交互节奏和信息密度上的异同。
+* **Objective:** To assess how closely the EasyMED VSP's conversational behavior resembles that of a human SP.
+* **Methods:**
+    * Dialogue logs from both Group A (interacting with VSP) and Group B (interacting with human SP) were extracted.
+    * **Semantic Consistency:** Used models like Sentence-BERT to calculate the cosine similarity between VSP and human SP responses in the same context.
+    * **Interaction Patterns:** Compared the average **Interaction Turns** and **Response Length** to analyze similarities in conversational rhythm and information density.
 
-#### **3. 内部评估可靠性分析 (Reliability Analysis of Internal Assessment)**
+#### **3. Reliability Analysis of Internal Assessment**
 
-* **目标：** 验证 EasyMED 内置的 CR-PTE 自动评估框架是否准确、可靠。
-* **方法：**
-    * 我们将实验组学生的训练表现同时交由 **EasyMED系统** 和 **外部人类专家** 进行评分。
-    * **相关性分析：** 计算系统自动评分与专家评分之间的**皮尔逊相关系数 (Pearson correlation coefficient)**。
-    * **一致性检验：** 分析两者在“病史采集完整性”、“诊断准确性”等细分维度上评分的一致性。
-
----  
-
-
-## 🤝 如何贡献 (Contributing)
-
-我们热烈欢迎并感谢任何形式的贡献！无论您是开发者、研究人员还是临床专家，如果您对改进本项目有任何想法、建议或想要修复错误，请随时：
-* **Fork** 本仓库
-* 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
-* 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
-* 推送到分支 (`git push origin feature/AmazingFeature`)
-* **提交一个 Pull Request**
+* **Objective:** To validate the accuracy and reliability of the built-in CR-PTE automated assessment framework.
+* **Methods:**
+    * Students' performance data was scored by both the **EasyMED system** and by **external human experts**.
+    * **Correlation Analysis:** Calculated the **Pearson correlation coefficient** between the system's automated scores and the experts' scores.
+    * **Consistency Check:** Analyzed the scoring agreement on sub-dimensions such as "history-taking completeness" and "diagnostic accuracy."
 
 ---
 
+
+## 🤝 Contributing
+
+We warmly welcome and appreciate all forms of contributions! Whether you are a developer, a researcher, or a clinical expert, if you have ideas for improving this project or want to fix a bug, please feel free to:
+1.  **Fork** this repository.
+2.  Create your feature branch (`git checkout -b feature/AmazingFeature`).
+3.  Commit your changes (`git commit -m 'Add some AmazingFeature'`).
+4.  Push to the branch (`git push origin feature/AmazingFeature`).
+5.  Open a **Pull Request**.
+
 ---
 
-## 📜 许可证 (License)
+## 🎓 Citation
 
-本项目采用 [MIT License](LICENSE.txt) 授权。
+If you use EasyMED or this work in your research, please cite our paper (to be published):
+
+```bibtex
+@article{zhang2025easymed,
+  title={Human or LLM as Standardized Patients? A Comparative Study for Medical Education},
+  author={Zhang, Bingquan and Wang, Yuchi and Hu, Yan and Xie, Qianqian and Wang, Benyou},
+  journal={Preprint},
+  year={2025}
+}
+```
+
+---
+
+## 📜 License
+
+This project is licensed under the [MIT License](LICENSE.txt).
