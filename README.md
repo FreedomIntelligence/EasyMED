@@ -107,20 +107,6 @@ We warmly welcome and appreciate all forms of contributions! Whether you are a d
 
 ---
 
-## 🎓 Citation
-
-If you use EasyMED or this work in your research, please cite our paper (to be published):
-
-```bibtex
-@article{zhang2025easymed,
-  title={Human or LLM as Standardized Patients? A Comparative Study for Medical Education},
-  author={Zhang, Bingquan and Wang, Yuchi and Hu, Yan and Xie, Qianqian and Wang, Benyou},
-  journal={Preprint},
-  year={2025}
-}
-```
-
----
 
 ## 📜 License
 
