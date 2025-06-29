@@ -89,15 +89,6 @@
 
 ---  
 
-## 🛠️ 技术实现 (How It Works)
-
-本项目的核心技术栈（待补充）:
-* **大语言模型 (LLM):** `Qwen2.5-Max` (用于意图识别)
-* **后端:** `Python`, `FastAPI`
-* **前端:** `Vue.js`, `TypeScript`
-* **数据库:** `PostgreSQL`
-
----
 
 ## 🤝 如何贡献 (Contributing)
 
@@ -109,19 +100,6 @@
 * **提交一个 Pull Request**
 
 ---
-
-## 🎓 如何引用 (Citation)
-
-如果您在您的研究中使用了 EasyMED 或本文档，请引用我们的论文（待发表）：
-
-```bibtex
-@article{zhang2025easymed,
-  title={Human or LLM as Standardized Patients? A Comparative Study for Medical Education},
-  author={Zhang, Bingquan and Wang, Yuchi and Hu, Yan and Xie, Qianqian and Wang, Benyou},
-  journal={Preprint},
-  year={2025}
-}
-```
 
 ---
 
