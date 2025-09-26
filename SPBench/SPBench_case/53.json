@@ -1,0 +1,33 @@
+{
+    "caseId": "53",
+    "caseTitle": "急性化脓性根尖周炎",
+    "caseDescription": "患者因左上后牙咬合痛2周，伴肿胀跳痛2天就诊。",
+    "patientProfile": {
+        "name": "张伟",
+        "age_value": 40,
+        "age_unit": "岁",
+        "gender": "男",
+        "occupation": "教师",
+        "marital_status": "已婚",
+        "address": "无",
+        "social_background": "无",
+        "basic_info": "患者张伟，男，40岁，教师，已婚。",
+        "hospital_department_name": "口腔科",
+        "chief_complaint": "左上后牙咬合痛2周，伴肿胀跳痛2天。",
+        "present_illness_history": "患者述2周前自觉左上后牙区肿胀，咬合时有轻微钝痛，咬紧时反而稍感舒服，2天前饮酒后症状加重，出现自发的、剧烈持续的跳痛，自觉牙齿伸长，牙齿不能咬合，咬合时疼痛加剧，影响睡眠和进食，遂来诊，近期未曾服药及诊治。",
+        "past_medical_history": "患者平素体健，否认高血压、糖尿病、冠心病等慢性病史。",
+        "other_medical_history": "口腔病史：半年前有牙痛史。",
+        "surgery_injury_history": "无",
+        "transfusion_history": "无",
+        "infection_history": "否认肝炎、结核等传染病。",
+        "allergy_history": "否认药物过敏史。",
+        "system_review": "无",
+        "personal_history": "吸烟20年，每天10支，未戒烟。偶尔少量饮酒。",
+        "menstrual_history": "无",
+        "reproductive_history": "无",
+        "family_history": "否认特殊遗传病史。",
+        "idea": "患者认为症状加重可能与饮酒有关。",
+        "concern": "对牙科治疗感到害怕；疼痛剧烈，影响睡眠和进食。",
+        "expectation": "希望医生能帮助缓解剧烈牙痛。"
+    }
+}

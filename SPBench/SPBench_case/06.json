@@ -1,0 +1,33 @@
+{
+    "caseId": "06",
+    "caseTitle": "异位妊娠破裂",
+    "caseDescription": "情景地点：妇产科急诊。需要评估的能力：职业态度、基本理论、沟通技能、收集病史、体格检查、临床思维。考试时间：14分钟。",
+    "patientProfile": {
+        "name": "李女士",
+        "age_value": 26,
+        "age_unit": "岁",
+        "gender": "女性",
+        "occupation": "职员",
+        "marital_status": "已婚",
+        "address": "生于北京",
+        "social_background": "职员，不吸烟，不饮酒。",
+        "basic_info": "李女士,26岁,职员。腹痛来诊。生命征： T 37.0°C ,P90次 /min ,R22次 /min , BP 90/60mmHg。",
+        "hospital_department_name": "妇科",
+        "chief_complaint": "停经40天,突发下腹痛4小时",
+        "present_illness_history": "病人平素月经规律，（5~6）天/30天,不伴痛经。末次月经时间40天前，为正常月经。7天前阴道出血，量较正常月经量少，持续3天干净。4小时前家务劳动时出现下腹痛，初为右下腹，后转为全腹，为持续性钝痛，改变体位无缓解，疼痛渐加重，伴恶心、呕吐、乏力、出汗，伴肛门坠胀感，不伴心慌、憋气，不伴胸背部放射性疼痛，不伴腹泻。于外科急诊就诊。查尿 HCG(Σ+Σ) ；腹部超声提示未见肿大阑尾，右附件区可见直径 4cm 不均质包块，盆腹腔内可见液性暗区，遂来妇产科就诊。发病以来未大便，小便正常，近4小时未进食。",
+        "past_medical_history": "体健,否认高血压、糖尿病等慢性病史。",
+        "other_medical_history": "无",
+        "surgery_injury_history": "无手术、外伤史。",
+        "transfusion_history": "无输血史。",
+        "infection_history": "否认传染病史。",
+        "allergy_history": "无药物过敏史。",
+        "system_review": "不伴心慌、憋气，不伴胸背部放射性疼痛，不伴腹泻。心肺查体未见异常，小便正常。",
+        "personal_history": "生于北京,职员。不吸烟,不饮酒。",
+        "menstrual_history": "平素月经规律，（5~6）天/30天,不伴痛经。末次月经时间40天前，为正常月经。7天前阴道出血，量较正常月经量少，持续3天干净。",
+        "reproductive_history": "已婚， G1P0 。1年前药物流产一次。间断工具避孕。",
+        "family_history": "否认家族遗传病史。",
+        "idea": "患者认为自己不可能怀孕，因为近期有阴道出血，自认为是月经来潮，且采取了安全期避孕法。对尿检阳性结果表示怀疑，认为检查有误。",
+        "concern": "患者主要担心剧烈腹痛的原因，初怀疑是阑尾炎。对被告知怀孕感到震惊和不解。",
+        "expectation": "无"
+    }
+}

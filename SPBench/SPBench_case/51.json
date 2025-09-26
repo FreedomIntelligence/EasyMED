@@ -1,0 +1,33 @@
+{
+    "caseId": "51",
+    "caseTitle": "复发性阿弗他溃疡",
+    "caseDescription": "28岁女性，因口腔溃疡反复发作2年余就诊。",
+    "patientProfile": {
+        "name": "王红",
+        "age_value": 28,
+        "age_unit": "岁",
+        "gender": "女",
+        "occupation": "企业高管",
+        "marital_status": "未婚",
+        "address": "无",
+        "social_background": "无",
+        "basic_info": "患者王红，女，28岁，企业高管，未婚。",
+        "hospital_department_name": "口腔科",
+        "chief_complaint": "口腔溃疡反复发作2年余。",
+        "present_illness_history": "患者2年来口腔内反复发生溃疡，发生部位不定（嘴唇、舌头等），每次发作3-5个，黄豆大小，圆形或椭圆形，表现为中心白点、周围红晕。10天左右可自行愈合，不留疤痕。间隔半个月到1个月复发，常在着急上火时诱发。发作时疼痛明显，影响进食。近4天舌左侧出现一米粒大小溃疡，疼痛明显，影响进食。曾自行口服“维生素B2”，效果不佳。平素工作压力大，睡眠不好，大小便正常。",
+        "past_medical_history": "患者平素体健，否认高血压、糖尿病、心脏病等病史。",
+        "other_medical_history": "否认放射治疗史。",
+        "surgery_injury_history": "无",
+        "transfusion_history": "无",
+        "infection_history": "否认肝炎、结核、艾滋等传染病病史。",
+        "allergy_history": "否认食物和药物过敏史。",
+        "system_review": "否认身体其他部位（如眼睛、会阴、手脚）溃疡。否认发热、疱疹史。口腔内无坏牙或牙齿磨舌情况。大小便正常。",
+        "personal_history": "否认吸烟史；否认饮酒史。工作压力大，睡眠不佳，有时失眠。饮食均衡，无挑食。近期无疫苗接种史。",
+        "menstrual_history": "无",
+        "reproductive_history": "无",
+        "family_history": "母亲有频发口腔溃疡史。否认家族相关遗传病史。",
+        "idea": "无",
+        "concern": "无",
+        "expectation": "无"
+    }
+}

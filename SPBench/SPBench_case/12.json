@@ -1,0 +1,33 @@
+{
+    "caseId": "12",
+    "caseTitle": "重性抑郁性障碍(精神专科）",
+    "caseDescription": "男性,27岁，博士研究生。因心情低落、精力疲惫、睡眠差，伴自杀企图就诊。",
+    "patientProfile": {
+        "name": "无",
+        "age_value": 27,
+        "age_unit": "岁",
+        "gender": "男性",
+        "occupation": "博士研究生",
+        "marital_status": "未婚",
+        "address": "无",
+        "social_background": "博士研究生，面临毕业压力。",
+        "basic_info": "男性,27岁，研究生。生命征平稳，查体未发现明显异常。",
+        "hospital_department_name": "精神科",
+        "chief_complaint": "心情低落、精力疲惫、睡眠差半年，加重伴自杀企图1个月。",
+        "present_illness_history": "患者半年前无明显诱因出现疲惫、无精打采、做事提不起精神，对论文撰写等任务无法开始。表现为心不在焉、言语减少、回避社交、工作效率极低。夜间睡眠差，入睡困难、多梦。曾在外院按“失眠”治疗，效果不佳。近1个月上述症状加重，常缺课、缺席实验，多数时间卧床，伴明显消瘦。有自杀观念，曾向同学透露写遗书，并积攒安眠药。自述“活得很累”、“没意思”、“不想活了”，食欲差，早醒。",
+        "past_medical_history": "无可记载的重大躯体疾病史。",
+        "other_medical_history": "无",
+        "surgery_injury_history": "无",
+        "transfusion_history": "无",
+        "infection_history": "无",
+        "allergy_history": "无",
+        "system_review": "否认有过心情特别好、精力特别充沛的时期。否认凭空听到有人说话或感觉被跟踪、迫害等体验。",
+        "personal_history": "足月顺产，生长发育正常。适龄入学，学习成绩一直较好。性格偏内向，做事认真，朋友少，但很少与人冲突。",
+        "menstrual_history": "无",
+        "reproductive_history": "未婚",
+        "family_history": "否认家族遗传病史和精神病史。",
+        "idea": "患者认为自己“活得很累，没有意思”，“什么都干不了，就是个废人”，感觉“对不起父母”。",
+        "concern": "患者有强烈的自杀观念（“不想活了”），并考虑过具体方式（跳楼、吃药），但因顾及父母而犹豫。",
+        "expectation": "患者被动就医，但在医生引导下表示愿意沟通，并对医生的关怀表示感谢，希望得到帮助以减轻痛苦。"
+    }
+}

@@ -1,0 +1,33 @@
+{
+    "caseId": "10",
+    "caseTitle": "抑郁症（精神专科）",
+    "caseDescription": "女性，60岁，因情绪低落来诊。",
+    "patientProfile": {
+        "name": "李女士",
+        "age_value": 60,
+        "age_unit": "岁",
+        "gender": "女性",
+        "occupation": "从事管理工作，已退休",
+        "marital_status": "丧偶",
+        "address": "无",
+        "social_background": "大学文化",
+        "basic_info": "女性，60岁,大学文化,既往从事管理工作，已退休。",
+        "hospital_department_name": "精神科",
+        "chief_complaint": "情绪低落3年。",
+        "present_illness_history": "病人在3年前丧偶后逐渐出现情绪低落，自觉终日高兴不起来，兴趣活动减少，不愿和别人接触，感觉内心压抑。夜间睡眠差，不易人睡、早醒，晨起时情绪低落明显。感觉生活没有意义，外出旅游时情绪有所缓解，但回家后无改善，不想做事情，感觉精力不如从前。1年多以前曾到医院门诊就诊，口服药物4个月后感症状无改善自行停药。仍有夜间睡眠差，时常独自哭泣，感到生活没有希望，有轻生的想法，觉得自已没有价值，拖累了家人，但因顾及家人未出现自伤、自杀行为。近1个月上述症状仍然明显，为进一步治疗来门诊。自患病来,病人精神差,近1周每天都不能很好入睡，有时整夜未睡，没有食欲，大小便次数减少，体重明显下降约9kg。",
+        "past_medical_history": "平素体健,否认神经精神疾病史,未长期服用任何药物。",
+        "other_medical_history": "无",
+        "surgery_injury_history": "无头颅外伤或手术史。",
+        "transfusion_history": "无",
+        "infection_history": "无",
+        "allergy_history": "无",
+        "system_review": "精神差，睡眠差，食欲不佳，大小便次数减少，体重下降。",
+        "personal_history": "夫妻关系和睦，3年前丈夫意外车祸身亡。从不喝酒，否认吸毒史。",
+        "menstrual_history": "无",
+        "reproductive_history": "有一子,体健。",
+        "family_history": "否认家族中有类似疾病史或其他精神疾病史。",
+        "idea": "认为自己心情不好是因为爱人去世，对之前的治疗感觉没有效果。",
+        "concern": "觉得自己没有价值，是家人的累赘，拖累了儿子。",
+        "expectation": "为进一步治疗来门诊。"
+    }
+}
