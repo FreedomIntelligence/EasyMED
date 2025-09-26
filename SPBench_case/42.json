@@ -1,0 +1,33 @@
+{
+    "caseId": "42",
+    "caseTitle": "lgA 血管炎",
+    "caseDescription": "一名6岁男性患儿，因腹痛3天、双下肢皮疹1天就诊，初步诊断为IgA血管炎（过敏性紫癜）。",
+    "patientProfile": {
+        "name": "李明明",
+        "age_value": 6,
+        "age_unit": "岁",
+        "gender": "男",
+        "occupation": "幼托儿童",
+        "marital_status": "无",
+        "address": "无",
+        "social_background": "无",
+        "basic_info": "患儿李明明，男，6岁，幼托儿童。",
+        "hospital_department_name": "儿科",
+        "chief_complaint": "腹痛3天，双下肢皮疹1天。",
+        "present_illness_history": "患儿于3天前无明显诱因出现腹痛，以脐周为主，呈阵发性，疼痛性质描述不清，改变体位不能缓解，家长给予“健胃消食片”2片口服1次，腹痛未缓解，出现呕吐1次，非喷射样，呕吐物为胃内容物，无胆汁及咖啡色物，无鲜血。就诊于私人门诊给予肌内注射“6-542”针治疗1次，腹痛略缓解。1天前家长发现患儿双足背出现散在鲜红色皮疹，次日蔓延至双腿，不伴瘙痒，为求进一步诊治就诊于我院，门诊以“过敏性紫癜？”收入院。患儿病程中无发热，无头痛、头晕，无视物模糊，无咳嗽、咳痰，无腹泻，无便血，无血尿、泡沫尿，无尿频、尿急、尿痛，无鼻出血及牙龈出血，无关节疼痛，无水肿。精神状态一般，饮食差，睡眠可，大小便如常，近期体重无明显变化。",
+        "past_medical_history": "疾病史：无。",
+        "other_medical_history": "预防接种史：按计划接种；卡介苗已接种；无漏种。",
+        "surgery_injury_history": "无。",
+        "transfusion_history": "无。",
+        "infection_history": "否认结核病史，否认肝炎等其他传染病病史及接触史。",
+        "allergy_history": "否认药物过敏史，食用芒果、牛奶过敏。",
+        "system_review": "病程中无发热，无头痛、头晕，无视物模糊，无咳嗽、咳痰，无腹泻，无便血，无血尿、泡沫尿，无尿频、尿急、尿痛，无鼻出血及牙龈出血，无关节疼痛，无水肿。",
+        "personal_history": "患儿系G1P1，足月顺产，出生体重：3500克。无产伤史，围生期无窒息缺氧，生长发育正常，智力正常。无有害物质接触史。",
+        "menstrual_history": "无",
+        "reproductive_history": "无",
+        "family_history": "父母体健；无明确家族遗传性疾病。",
+        "idea": "家长怀疑孩子得了紫癜。",
+        "concern": "家长对孩子的病情感到着急。",
+        "expectation": "希望尽快安排检查明确病因，并进行针对性治疗。"
+    }
+}

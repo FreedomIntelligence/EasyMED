@@ -1,0 +1,33 @@
+{
+    "caseId": "01",
+    "caseTitle": "甲状腺功能亢进症（Graves 病）",
+    "caseDescription": "女性，36岁，公司文员。因心慌、体重减轻就诊。",
+    "patientProfile": {
+        "name": "×××",
+        "age_value": 36,
+        "age_unit": "岁",
+        "gender": "女性",
+        "occupation": "公司文员",
+        "marital_status": "已婚",
+        "address": "北京",
+        "social_background": "从事文员工作，经常使用电脑，无毒物及放射线接触史。",
+        "basic_info": "女性，36岁，公司文员。",
+        "hospital_department_name": "内分泌科",
+        "chief_complaint": "心慌、手抖2个月，消瘦1个月。",
+        "present_illness_history": "患者2个月前无明显诱因自觉心慌、手抖，未予重视。近1个月上述症状加重，且出现易饥、进食增多但体重下降（2个月下降4kg），伴怕热、多汗、乏力、脾气急躁、睡眠差。大便次数增多，每日3-4次稀便，无黏液脓血及腹痛。无胸闷、胸痛、恶心、呕吐、发热、盗汗。",
+        "past_medical_history": "否认肝炎、结核、肾脏病、心脏病史。",
+        "other_medical_history": "无",
+        "surgery_injury_history": "否认外伤、手术史。",
+        "transfusion_history": "无",
+        "infection_history": "否认肝炎、结核等传染病史。",
+        "allergy_history": "对鸡蛋过敏，否认药物过敏史。",
+        "system_review": "心血管系统：心慌，无胸闷、胸痛。消化系统：易饥、多食，大便次数增多、变稀，无腹痛、恶心呕吐。神经精神系统：手抖，脾气急躁，睡眠差，乏力。内分泌系统：怕热、多汗、体重下降。生殖系统：月经量减少。",
+        "personal_history": "生于北京，长居本地。从事文员工作，无毒物及放射线接触史。无吸烟、饮酒嗜好。近期无大量海产品进食史。",
+        "menstrual_history": "平素月经规律，近2个月月经量较前减少。",
+        "reproductive_history": "已婚，育有1子，爱人及孩子体健。",
+        "family_history": "母亲患甲状腺功能减退症，服药控制可。否认家族中其他类似病史及肿瘤病史。",
+        "idea": "患者初担心消瘦为肿瘤所致，经医生解释后，理解可能为甲状腺功能问题。",
+        "concern": "担心病情严重，特别是消瘦是否为肿瘤的征兆。",
+        "expectation": "希望医生尽快安排检查，明确诊断。"
+    }
+}

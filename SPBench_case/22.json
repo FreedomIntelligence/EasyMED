@@ -1,0 +1,33 @@
+{
+    "caseId": "22",
+    "caseTitle": "胃溃疡",
+    "caseDescription": "50岁女性，因上腹部疼痛3年，加重伴黑便1周入院。",
+    "patientProfile": {
+        "name": "王花花",
+        "age_value": 50,
+        "age_unit": "岁",
+        "gender": "女",
+        "occupation": "工人",
+        "marital_status": "已婚",
+        "address": "内蒙古呼和浩特市",
+        "social_background": "工人，出生并久居于内蒙古呼和浩特市。",
+        "basic_info": "患者王花花，女，50岁，工人。",
+        "hospital_department_name": "消化科",
+        "chief_complaint": "上腹部疼痛3年，加重伴黑便1周。",
+        "present_illness_history": "患者于3年前无明显诱因出现上腹部疼痛，呈间歇性隐痛，多于饱餐后发作，每次持续数小时后可自行缓解，无夜间痛及放射痛，伴反酸、嗳气，无恶心、呕吐，无呕血、黑便，未予重视。1周前患者进食辛辣食物后再次出现上腹部疼痛，较前加重，呈持续性胀痛，伴反酸、嗳气，恶心，呕吐胃内容物1次，非喷射性，解黑便3次，每次量约250g，成形，无里急后重感。遂至当地诊所就诊，予“奥美拉唑”20mg qd po治疗3天，症状稍缓解。为进一步诊治，患者至我院就诊，门诊以“腹痛待查”收入院。患者自发病以来，精神、饮食、睡眠欠佳，大小便正常，体重无明显变化。",
+        "past_medical_history": "平素健康状况良好。否认“高血压、糖尿病、冠心病”等慢性病史。",
+        "other_medical_history": "无",
+        "surgery_injury_history": "否认手术、外伤史。",
+        "transfusion_history": "否认输血史。",
+        "infection_history": "否认“肝炎、结核”等传染病史。",
+        "allergy_history": "否认药物过敏史。",
+        "system_review": "自发病以来，精神、饮食、睡眠欠佳。小便量稍减少。体重无明显变化。",
+        "personal_history": "出生于并久居于内蒙古呼和浩特市，否认疫区、疫情、疫水接触史，否认特殊化学品、毒物、射线接触史。无烟酒嗜好。预防接种史不详。",
+        "menstrual_history": "14岁月经初潮，周期28-30天，经期4-5天，末次月经2022-07-16，无痛经史。",
+        "reproductive_history": "22岁结婚，配偶体健。育有2子女（1男1女），均体健。无流产、早产或死胎史。",
+        "family_history": "否认家族性遗传病史及消化系统疾病史。",
+        "idea": "无",
+        "concern": "无",
+        "expectation": "无"
+    }
+}

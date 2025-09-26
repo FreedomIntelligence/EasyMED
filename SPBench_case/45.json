@@ -1,0 +1,33 @@
+{
+    "caseId": "45",
+    "caseTitle": "腰痛 瘀血腰痛",
+    "caseDescription": "患者因腰部扭伤后反复发作腰痛1年，加重2周就诊。",
+    "patientProfile": {
+        "name": "王林海",
+        "age_value": 35,
+        "age_unit": "岁",
+        "gender": "男",
+        "occupation": "建筑工人",
+        "marital_status": "已婚",
+        "address": "无",
+        "social_background": "无",
+        "basic_info": "患者王林海，男，35岁，建筑工人，已婚。",
+        "hospital_department_name": "中医科",
+        "chief_complaint": "腰痛反复发作1年，加重2周。",
+        "present_illness_history": "患者1年前于建筑工地推车运货时不慎扭伤腰部，自行口服药物及贴敷膏药（具体药物不详）后腰痛好转，遇劳反复。2周前劳累后腰痛加重，未行诊治。现症见：腰痛如刺，痛有定处，人夜尤甚，转侧不利，痛处拒按，寐差，纳食尚可，饮水较少，大便正常，小便偏少。舌质紫暗，有斑，脉涩。",
+        "past_medical_history": "否认高血压、糖尿病、冠心病等慢性病史。",
+        "other_medical_history": "无",
+        "surgery_injury_history": "1年前腰部扭伤史，否认手术史。",
+        "transfusion_history": "无",
+        "infection_history": "否认肝炎、结核等传染病史。",
+        "allergy_history": "否认药物过敏史。",
+        "system_review": "腰痛如刺，痛有定处，人夜尤甚，转侧不利，痛处拒按。睡眠差，纳食尚可，饮水较少，大便正常，小便偏少。",
+        "personal_history": "无吸烟史；无饮酒史。",
+        "menstrual_history": "无",
+        "reproductive_history": "无",
+        "family_history": "否认家族相关遗传病史。",
+        "idea": "患者认为腰痛是由于一年前扭伤落下病根，近期劳累导致加重。",
+        "concern": "疼痛加重，影响翻身、弯腰等活动，影响睡眠。",
+        "expectation": "希望缓解疼痛，恢复正常活动。"
+    }
+}

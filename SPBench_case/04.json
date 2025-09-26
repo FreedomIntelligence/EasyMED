@@ -1,0 +1,33 @@
+{
+    "caseId": "04",
+    "caseTitle": "腹股沟斜疝",
+    "caseDescription": "男性，66岁，因发现右侧腹股沟区可还纳性包块1年来诊。",
+    "patientProfile": {
+        "name": "张先生",
+        "age_value": 66,
+        "age_unit": "岁",
+        "gender": "男性",
+        "occupation": "无",
+        "marital_status": "已婚",
+        "address": "北京",
+        "social_background": "无",
+        "basic_info": "男性，66岁。发现右侧腹股沟区包块来诊。",
+        "hospital_department_name": "普外科",
+        "chief_complaint": "右下腹腹股沟区可还纳包块1年。",
+        "present_illness_history": "患者1年前站立时右下腹腹股沟区出现一质软包块，平卧时包块多可消失，偶有坠胀感。一年来站立时包块逐渐增大，久站或活动后包块突入右侧阴囊，不伴腹痛、腹胀及排便排气困难。就诊于门诊，行B超检查示右侧腹股沟疝。发病以来饮食、睡眠正常，大小便正常，体重无明显变化。",
+        "past_medical_history": "高血压病史10年，口服硝苯地平控释片治疗，血压控制满意。“慢性咳嗽”病史多年，未予特殊诊治。",
+        "other_medical_history": "无其他病史。",
+        "surgery_injury_history": "无",
+        "transfusion_history": "无",
+        "infection_history": "无",
+        "allergy_history": "无",
+        "system_review": "心肺无明显阳性体征。腹部无压痛。大小便正常。",
+        "personal_history": "生于北京。吸烟30余年,每天1~2包。偶尔饮酒。",
+        "menstrual_history": "不适用",
+        "reproductive_history": "已婚，配偶及子女体健。",
+        "family_history": "否认家族遗传病史。",
+        "idea": "患者自述一年前发现右大腿根部有鼓包，平躺消失。医生告知是肠子掉进阴囊，需要手术，但患者本人未完全记住具体病名。",
+        "concern": "担心包块一直存在不是好事，但又觉得没有腹痛腹胀等严重症状，对医生说的“肠子可能卡住”的严重性存疑。",
+        "expectation": "来医院明确诊断并寻求治疗方案。"
+    }
+}

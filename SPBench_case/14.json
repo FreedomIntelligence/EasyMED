@@ -1,0 +1,33 @@
+{
+    "caseId": "14",
+    "caseTitle": "腰痛(针灸)",
+    "caseDescription": "女性,54岁，司机。腰痛2年,近10天加重伴右下肢疼痛就诊。",
+    "patientProfile": {
+        "name": "无",
+        "age_value": 54,
+        "age_unit": "岁",
+        "gender": "女性",
+        "occupation": "司机",
+        "marital_status": "已婚",
+        "address": "上海",
+        "social_background": "教育水平：大专",
+        "basic_info": "女性,54岁，司机，已婚，育有1子。",
+        "hospital_department_name": "中医科",
+        "chief_complaint": "腰痛2年，加重伴右下肢疼痛10天。",
+        "present_illness_history": "病人2年前无明显诱因出现腰痛，久坐时加重，休息平卧后缓解，未予系统诊治。自行口服止痛药物治疗，间歇性发作。10天前弯腰持重物后再次出现腰痛，伴有右下肢放射样疼痛，咳嗽时加重，在附近医院检查腰椎CT发现腰椎间盘突出，给予牵引、理疗等治疗无明显缓解。为明确诊断来我院。病程中胃纳尚可，大小便调，寐欠佳，体重无明显改变。",
+        "past_medical_history": "否认肝炎、结核病史；否认高血压、冠心病及糖尿病史；否认外伤史；否认药物及食物过敏史；预防接种史不详。",
+        "other_medical_history": "否认高血压、冠心病及糖尿病史。",
+        "surgery_injury_history": "2年前行右前臂脂肪瘤切除术；否认外伤史。",
+        "transfusion_history": "无",
+        "infection_history": "否认肝炎、结核病史。",
+        "allergy_history": "否认药物及食物过敏史。",
+        "system_review": "胃纳尚可，大便有些干燥，小便有点频，寐欠佳，体重无明显改变。",
+        "personal_history": "生于上海，从事司机工作,无毒物及放射线接触史，无吸烟饮酒嗜好，生活规律。",
+        "menstrual_history": "平素月经规律，52岁绝经。",
+        "reproductive_history": "已婚，育有1子，爱人及孩子体健。",
+        "family_history": "父母健在，身体健康。有一妹妹，50岁，身体健康。否认家族性遗传病史；否认家族性传染病病史。",
+        "idea": "我这个到底是什么问题？怎么引起的？",
+        "concern": "自己越来越担心，会不会其他地方还有什么毛病没有检查出来？这样下去会不会瘫痪？是不是需要开刀？",
+        "expectation": "家人叫我到去大医院看看，再确诊一下。希望了解保守治疗的方法、疗程、效果及后遗症。"
+    }
+}
