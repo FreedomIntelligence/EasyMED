@@ -246,12 +246,11 @@ Each case file (`SPBench_case/<id>.json`) follows this structure:
 If you use EasyMED in your research, please cite:
 
 ```bibtex
-@article{zhang2026easymed,
-  title={Human or LLM as Standardized Patients? A Comparative Study in Medical Education},
+@article{zhang2025human,
+  title={Human or LLM as Standardized Patients? A Comparative Study for Medical Education},
   author={Zhang, Bingquan and Liu, Xiaoxiao and Wang, Yuchi and Zhou, Lei and Xie, Qianqian and Wang, Benyou},
-  year={2026},
-  archivePrefix={arXiv},
-  primaryClass={cs.CL}
+  journal={arXiv preprint arXiv:2511.14783},
+  year={2025}
 }
 ```
 
