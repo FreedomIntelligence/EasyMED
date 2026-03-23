@@ -4,12 +4,12 @@ EasyMED - Clinical Skills Evaluation Module
 Evaluates a medical student's consultation performance against an expert
 case template.  The evaluator uses an LLM to analyse six dimensions:
 
-    1. 问诊技巧  – history-taking quality
-    2. 体格检查  – physical examination completeness
-    3. 辅助检查  – appropriate use of laboratory / imaging studies
-    4. 诊断思维  – diagnostic reasoning
-    5. 治疗方案  – treatment planning
-    6. 整体表现  – overall performance
+    1. History-Taking         – completeness and accuracy of the consultation
+    2. Physical Examination   – appropriate selection of physical exam items
+    3. Auxiliary Examination  – appropriate use of laboratory / imaging studies
+    4. Diagnostic Reasoning   – correctness of diagnosis and differential diagnosis
+    5. Treatment Planning     – appropriateness of the proposed treatment plan
+    6. Overall Performance    – assessment and improvement suggestions
 
 Usage:
     from evaluation import ClinicalEvaluator
@@ -56,24 +56,24 @@ case_template = {
     "caseId":    "...",
     "caseTitle": "...",
     "patientProfile": {
-        "name": "...", "age_value": 30, "age_unit": "岁",
-        "gender": "男", "chief_complaint": "...",
+        "name": "...", "age_value": 30, "age_unit": "years",
+        "gender": "Male", "chief_complaint": "...",
         "present_illness_history": "...",
         ...
     },
-    "mustConsultionItems":    ["主要症状", "发作时间", ...],
-    "optionalConsultionItems":["生活习惯", ...],
-    "mustPhysicalExams":      ["体温", "血压", ...],
+    "mustConsultionItems":    ["Chief Complaint", "Onset Time", ...],
+    "optionalConsultionItems":["Lifestyle Habits", ...],
+    "mustPhysicalExams":      ["Temperature", "Blood Pressure", ...],
     "optionalPhysicalExams":  [...],
-    "mustAuxiliaryLabs":      ["血常规", "胸部CT", ...],
+    "mustAuxiliaryLabs":      ["CBC", "Chest CT", ...],
     "optionalAuxiliaryLabs":  [...],
-    "physicalExams":          {"体温": "36.5°C", ...},
-    "auxiliaryLabs":          {"血常规": "...", ...},
+    "physicalExams":          {"Temperature": "36.5°C", ...},
+    "auxiliaryLabs":          {"CBC": "...", ...},
     "diagnoses": {
         "mainDiagnosis": {"disease": "..."},
         "differentialDiagnoses": [{"disease": "..."}, ...]
     },
-    "treatments": "1. 吸氧\n2. 抗感染治疗\n...",
+    "treatments": "1. Oxygen therapy\n2. Anti-infective treatment\n...",
 }
 """
 
@@ -165,26 +165,26 @@ class ClinicalEvaluator:
         patient = template.get("patientProfile", {})
 
         parts.append(
-            f"【病例信息】\n"
-            f"患者：{patient.get('name', '未知')}，"
-            f"{patient.get('age_value', '')} {patient.get('age_unit', '岁')}，"
-            f"{patient.get('gender', '未知')}\n"
-            f"主诉：{patient.get('chief_complaint', '')}\n"
-            f"现病史：{patient.get('present_illness_history', '')}\n"
+            f"[Case Information]\n"
+            f"Patient: {patient.get('name', 'Unknown')}, "
+            f"{patient.get('age_value', '')} {patient.get('age_unit', 'years old')}, "
+            f"{patient.get('gender', 'Unknown')}\n"
+            f"Chief Complaint: {patient.get('chief_complaint', '')}\n"
+            f"History of Present Illness: {patient.get('present_illness_history', '')}\n"
         )
 
         # History-taking
         lines: List[str] = []
         for item in session.get("history", []):
             if item.get("question") and item.get("answer"):
-                q_line = f"医生问：{item['question']}"
+                q_line = f"Doctor: {item['question']}"
                 if item.get("intentClassification"):
-                    q_line += f"（意图：{item['intentClassification']}）"
+                    q_line += f" (Intent: {item['intentClassification']})"
                 lines.append(q_line)
-                lines.append(f"患者答：{item['answer']}")
+                lines.append(f"Patient: {item['answer']}")
 
         if lines:
-            parts.append("【问诊过程】")
+            parts.append("[Consultation Process]")
             parts.extend(lines[:40])
             if len(lines) > 40:
                 parts.append("... (truncated)")
@@ -195,37 +195,37 @@ class ClinicalEvaluator:
         for exam in session.get("performedExams", []):
             if not exam.get("itemName"):
                 continue
-            line = f"{exam['itemName']}：{exam.get('result', '')}"
+            line = f"{exam['itemName']}: {exam.get('result', '')}"
             if exam.get("examType") == "physical_exam":
                 physical.append(line)
             else:
                 auxiliary.append(line)
 
         if physical:
-            parts.append("\n【体格检查】")
+            parts.append("\n[Physical Examination Performed]")
             parts.extend(physical)
 
         if auxiliary:
-            parts.append("\n【辅助检查】")
+            parts.append("\n[Auxiliary Examinations Performed]")
             parts.extend(auxiliary)
 
         # Diagnosis
         submissions = session.get("userSubmissions", [])
         if submissions:
             sub_data = submissions[-1].get("data", {})
-            parts.append("【学生诊断】")
+            parts.append("[Student Diagnosis]")
 
             main_dx = sub_data.get("mainDiagnoses", [])
             if main_dx:
-                parts.append("主要诊断：")
+                parts.append("Primary Diagnosis:")
                 for dx in main_dx:
                     parts.append(f"  - {dx.get('diagnosisName', '')}")
 
             diff_dx = sub_data.get("differentialDiagnoses", [])
             if diff_dx:
-                parts.append("鉴别诊断：")
+                parts.append("Differential Diagnosis:")
                 for dx in diff_dx:
-                    status = "支持" if dx.get("status") == "support" else "排除"
+                    status = "Support" if dx.get("status") == "support" else "Exclude"
                     parts.append(f"  - {dx.get('disease', '')} ({status})")
 
         # Treatment
@@ -233,8 +233,8 @@ class ClinicalEvaluator:
         if treatments:
             plan = treatments[-1].get("data", {}).get("treatmentPlan", "")
             if plan:
-                parts.append("\n【治疗方案】")
-                parts.append(f"治疗计划：{plan}")
+                parts.append("\n[Treatment Plan Submitted]")
+                parts.append(f"Treatment Plan: {plan}")
 
         return "\n".join(parts)
 
@@ -245,52 +245,52 @@ class ClinicalEvaluator:
     def _build_expert_answer(self, template: Dict) -> str:
         lines: List[str] = []
 
-        lines.append("【标准问诊要点】")
+        lines.append("[Standard Consultation Key Points]")
         must_consult = template.get("mustConsultionItems", [])
-        lines.append("必须问诊项目：" + "、".join(must_consult))
+        lines.append("Required inquiry items: " + ", ".join(must_consult))
         opt_consult  = template.get("optionalConsultionItems", [])
         if opt_consult:
-            lines.append("可选问诊项目：" + "、".join(opt_consult))
+            lines.append("Optional inquiry items: " + ", ".join(opt_consult))
 
-        lines.append("\n【标准体格检查】")
+        lines.append("\n[Standard Physical Examination]")
         must_phys = template.get("mustPhysicalExams", [])
-        lines.append("必须检查项目：" + "、".join(must_phys))
+        lines.append("Required examination items: " + ", ".join(must_phys))
         opt_phys  = [i for i in template.get("optionalPhysicalExams", []) if i.strip()]
         if opt_phys:
-            lines.append("可选检查项目：" + "、".join(opt_phys))
+            lines.append("Optional examination items: " + ", ".join(opt_phys))
         phys_results = template.get("physicalExams", {})
         if phys_results:
-            lines.append("标准检查结果：")
+            lines.append("Standard examination findings:")
             for k, v in phys_results.items():
-                lines.append(f"  - {k}：{v}")
+                lines.append(f"  - {k}: {v}")
 
-        lines.append("\n【标准辅助检查】")
+        lines.append("\n[Standard Auxiliary Examinations]")
         must_aux = template.get("mustAuxiliaryLabs", [])
-        lines.append("必须检查项目：" + "、".join(must_aux))
+        lines.append("Required examination items: " + ", ".join(must_aux))
         opt_aux  = [i for i in template.get("optionalAuxiliaryLabs", []) if i.strip()]
         if opt_aux:
-            lines.append("可选检查项目：" + "、".join(opt_aux))
+            lines.append("Optional examination items: " + ", ".join(opt_aux))
         aux_results = template.get("auxiliaryLabs", {})
         if aux_results:
-            lines.append("标准检查结果：")
+            lines.append("Standard examination findings:")
             for k, v in aux_results.items():
-                lines.append(f"  - {k}：{v}")
+                lines.append(f"  - {k}: {v}")
 
-        lines.append("\n【标准诊断】")
+        lines.append("\n[Standard Diagnosis]")
         dx = template.get("diagnoses", {})
         main_dx = dx.get("mainDiagnosis", {})
         if isinstance(main_dx, list):
-            lines.append("主要诊断：" + ", ".join(d.get("disease", "") for d in main_dx))
+            lines.append("Primary diagnosis: " + ", ".join(d.get("disease", "") for d in main_dx))
         else:
-            lines.append(f"主要诊断：{main_dx.get('disease', '')}")
+            lines.append(f"Primary diagnosis: {main_dx.get('disease', '')}")
 
         diff_dxs = dx.get("differentialDiagnoses", [])
         if diff_dxs:
-            lines.append("鉴别诊断：")
+            lines.append("Differential diagnoses:")
             for d in diff_dxs:
                 lines.append(f"  - {d.get('disease', '')}")
 
-        lines.append(f"\n【标准治疗方案】")
+        lines.append("\n[Standard Treatment Plan]")
         lines.append(template.get("treatments", ""))
 
         return "\n".join(lines)
@@ -301,82 +301,85 @@ class ClinicalEvaluator:
 
     def _build_evaluation_prompt(self, session_summary: str, expert_answer: str) -> str:
         return f"""
-你是一位资深的临床医学教育专家，现在需要对一名医学生的临床技能练习进行评估。
+You are a senior clinical medical education expert. Please evaluate a medical student's clinical skills practice session.
 
-【重要评估原则】
-1. 严格按照专家标准答案进行评估，不得添加任何标准答案之外的要求
-2. 只对比学生表现与标准答案的差异，不要自己判断对错
-3. 标准答案中列出的是必须要做的，没有列出的不作为扣分依据
-4. 重点评估学生是否完成了标准答案中的要求
-5. 不要对标准答案之外的内容进行评价
-6. 不要提及标准答案不符等内容
-7. 对比产生的结果需要条理展示，不要出现重复内容
+[Important Evaluation Principles]
+1. Evaluate strictly against the expert standard answer — do not add requirements beyond it.
+2. Only compare the student's performance to the standard answer; do not apply your own judgment.
+3. Items listed in the standard answer are required; items NOT listed must not be used as grounds for deduction.
+4. Focus on whether the student completed all requirements in the standard answer.
+5. Do not evaluate content that is not in the standard answer.
+6. Do not use phrases such as "does not meet the standard answer."
+7. Present your findings clearly and without repetition.
 
-【学生表现记录】
+[Student Performance Record]
 {session_summary}
 
-【专家标准答案】
+[Expert Standard Answer]
 {expert_answer}
 
-请严格按照标准答案对学生表现进行评估，重点分析以下几个方面：
+Please evaluate the student's performance strictly against the standard answer, focusing on the following six areas:
 
-1. **问诊技巧**：
-   - 严格对比标准问诊要点，学生是否完成了所有必须问诊项目
-   - 检查是否遗漏了重要的问诊意图类别
-   - 遗漏项目：列出学生遗漏的问诊意图，并说明该问诊与诊断的相关性
-   - 重点评价问诊的完整性、准确性
+1. **History-Taking**:
+   - Compare against the required consultation key points — did the student cover all required inquiry items?
+   - Identify any missed intent categories and explain their relevance to the diagnosis.
+   - Note any inquiry items outside the standard answer and assess whether they are appropriate.
+   - Focus on the completeness and accuracy of the consultation.
 
-2. **体格检查**：
-   - 严格对比标准体检项目，学生是否完成了所有必须检查项目
-   - 完成项目：列出学生选取的必须检查项目和可选检查项目
-   - 遗漏项目：列出学生未完成的必须体检项目，并说明该检查与诊断的相关性。若无遗漏，请注明。
-   - 多余项目：列出学生做了专家标准答案之外的体检操作，评价是否符合当前诊断思路
+2. **Physical Examination**:
+   - Compare against the required physical exam items — did the student complete all required items?
+   - Completed items: list required and optional items the student performed.
+   - Missed items: list required items the student omitted, and explain their relevance to the diagnosis. If none, state so.
+   - Extra items: list any items the student performed that are outside the standard answer, and assess whether they are clinically appropriate.
 
-3. **辅助检查**：
-   - 严格对比标准辅助检查项目，学生是否完成了所有必须检查项目
-   - 完成项目：列出学生选取的必须检查项目和可选检查项目
-   - 遗漏项目：列出学生未完成的必须辅助检查项目，并说明该检查与诊断的相关性。若无遗漏，请注明。
-   - 多余项目：列出学生做了专家标准答案之外的辅助检查操作，评价是否符合当前诊断思路
+3. **Auxiliary Examinations**:
+   - Compare against the required auxiliary examination items — did the student complete all required items?
+   - Completed items: list required and optional items the student ordered.
+   - Missed items: list required items the student missed, and explain their relevance to the diagnosis. If none, state so.
+   - Extra items: list any tests outside the standard answer, and assess clinical appropriateness.
 
-4. **诊断思维**：
-   - 严格对比标准诊断，学生诊断是否与专家标准答案一致
-   - 对比鉴别诊断的考虑是否符合标准答案
-   - 评估学生选择的诊断依据是否充分、准确
+4. **Diagnostic Reasoning**:
+   - Compare against the standard diagnosis — does the student's diagnosis match the expert answer?
+   - Compare the differential diagnosis against the standard answer.
+   - Assess whether the student's supporting evidence is sufficient and accurate.
+   - Note any diagnoses outside the standard answer and suggest improvements.
 
-5. **治疗方案**：
-   - 分别列出学生的治疗方案和专家标准答案中该患者使用的治疗方案
-   - 严格对比标准治疗方案，清晰指出差异点、遗漏点，并给出改进建议
+5. **Treatment Planning**:
+   - List both the student's treatment plan and the standard treatment plan separately.
+   - Note: items in parentheses in the standard answer are examples — the student may use alternative specific measures.
+   - Compare against the standard plan and clearly identify discrepancies and missing items; provide improvement suggestions.
+   - Evaluate any treatments outside the standard answer for clinical rationale.
 
-6. **整体表现**：
-   - 基于标准答案综合评价学生的整体表现
-   - 总结学生在标准要求方面的完成情况
-   - 给出针对性的改进建议
+6. **Overall Performance**:
+   - Provide a comprehensive assessment based on the standard answer.
+   - Summarize how well the student met the required standards.
+   - Provide targeted improvement suggestions.
 
-【重要提醒】
-- 请严格按照以上六个模块的标题和要点进行输出
-- 每个阶段评价控制在 200–300 字左右
+[Important Reminders]
+- Strictly follow the above six section headings and sub-points in your output.
+- Keep each section to approximately 200–300 words.
 
-评估格式如下：
+Please format your evaluation as follows:
 
-## 问诊评价
-[基于标准问诊要点的具体评价]
+## Consultation Evaluation
+[Specific evaluation based on the standard consultation key points]
 
-## 体检评价
-[基于标准体检项目的具体评价]
+## Physical Examination Evaluation
+[Specific evaluation based on the standard physical exam items]
 
-## 辅助检查评价
-[基于标准辅助检查项目的具体评价]
+## Auxiliary Examination Evaluation
+[Specific evaluation based on the standard auxiliary examination items]
 
-## 诊断评价
-[基于标准诊断的具体评价]
+## Diagnosis Evaluation
+[Specific evaluation based on the standard diagnosis]
 
-## 治疗评价
-[基于标准治疗方案的具体评价]
+## Treatment Evaluation
+[Specific evaluation based on the standard treatment plan]
 
-## 整体评价
-[基于标准答案的整体评价]
+## Overall Evaluation
+[Comprehensive evaluation based on the standard answer]
 
-注意：请严格按照以上要求格式进行评估，不要出现任何其他内容。
+Note: Follow the above format strictly. Do not include any other content.
 """
 
     def _parse_evaluation(self, text: str) -> Dict[str, str]:
@@ -389,12 +392,12 @@ class ClinicalEvaluator:
             "overall":      "",
         }
         mapping = {
-            "问诊评价":    "consultation",
-            "体检评价":    "physical",
-            "辅助检查评价": "auxiliary",
-            "诊断评价":    "diagnosis",
-            "治疗评价":    "treatment",
-            "整体评价":    "overall",
+            "Consultation Evaluation":          "consultation",
+            "Physical Examination Evaluation":  "physical",
+            "Auxiliary Examination Evaluation": "auxiliary",
+            "Diagnosis Evaluation":             "diagnosis",
+            "Treatment Evaluation":             "treatment",
+            "Overall Evaluation":               "overall",
         }
 
         current = None
@@ -413,12 +416,12 @@ class ClinicalEvaluator:
 
     def _default_evaluation(self) -> Dict[str, str]:
         return {
-            "consultation": "问诊过程基本完成，建议进一步提升问诊技巧。",
-            "physical":     "体格检查项目基本合理，注意检查的全面性。",
-            "auxiliary":    "辅助检查选择基本合理，注意检查的针对性。",
-            "diagnosis":    "诊断思路基本正确，建议加强诊断依据的收集。",
-            "treatment":    "治疗方案需要进一步完善。",
-            "overall":      "整体表现中等，有继续提升的空间。",
+            "consultation": "The consultation process was largely completed. Consider further improving history-taking skills.",
+            "physical":     "Physical examination items were generally appropriate. Ensure comprehensive coverage.",
+            "auxiliary":    "Auxiliary examination choices were generally appropriate. Ensure targeted selection.",
+            "diagnosis":    "The diagnostic reasoning was mostly correct. Consider strengthening evidence collection.",
+            "treatment":    "The treatment plan needs further refinement.",
+            "overall":      "Overall performance was average. There is room for further improvement.",
         }
 
 
@@ -447,12 +450,12 @@ if __name__ == "__main__":
 
     print("=== EasyMED Clinical Evaluation ===\n")
     labels = {
-        "consultation": "问诊技巧",
-        "physical":     "体格检查",
-        "auxiliary":    "辅助检查",
-        "diagnosis":    "诊断思维",
-        "treatment":    "治疗方案",
-        "overall":      "整体表现",
+        "consultation": "History-Taking",
+        "physical":     "Physical Examination",
+        "auxiliary":    "Auxiliary Examinations",
+        "diagnosis":    "Diagnostic Reasoning",
+        "treatment":    "Treatment Planning",
+        "overall":      "Overall Performance",
     }
     for key, label in labels.items():
         print(f"### {label}")
