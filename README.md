@@ -51,7 +51,7 @@ EasyMED is designed for:
 ## Framework Architecture
 
 <p align="center">
-  <img src="assets/framework.png" alt="EasyMED framework" width="900"/>
+  <img src="assets/Agent_flow.png" alt="EasyMED framework" width="900"/>
 </p>
 
 <p align="center">
