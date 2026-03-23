@@ -2,12 +2,6 @@
 
 ![EasyMED Project Banner](https://placehold.co/1200x250/e53935/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
 
-![EasyMED Project Banner](https://placehold.co/1200x250/ef5350/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
-
-![EasyMED Project Banner](https://placehold.co/1200x250/f0625d/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
-
-![EasyMED Project Banner](https://placehold.co/1200x250/f28b82/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
-
 <p align="center">
 
 <img src="https://img.shields.io/badge/Python-3.10+-blue">
