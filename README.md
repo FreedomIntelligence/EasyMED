@@ -4,6 +4,8 @@
 <b>EasyMED: A Multi-Agent Virtual Standardized Patient Framework for Medical Education</b>
 </p>
 
+![EasyMED Project Banner](https://placehold.co/1200x250/3367d6/ffffff?text=EasyMED%3A+The+Future+of+Clinical+Education)
+
 <p align="center">
 
 <img src="https://img.shields.io/badge/Python-3.10+-blue">
