@@ -1,6 +1,10 @@
 # 🏥 EasyMED
 
-![EasyMED Project Banner](https://placehold.co/1200x250/d32f2f/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
+![EasyMED Project Banner](https://placehold.co/1200x250/ff0000/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
+
+![EasyMED Project Banner](https://placehold.co/1200x250/b71c1c/ffffff?text=EasyMED%3A+The+Future+of+Clinical+Education)
+
+![EasyMED Project Banner](https://placehold.co/1200x250/e53935/ffffff?text=EasyMED%3A+The+Future+of+Clinical+Education)
 
 <p align="center">
 
