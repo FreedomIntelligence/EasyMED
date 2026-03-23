@@ -2,15 +2,11 @@
 
 ![EasyMED Project Banner](https://placehold.co/1200x250/e53935/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
 
-![EasyMED Project Banner](https://placehold.co/1200x250/f8b4b4/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
+![EasyMED Project Banner](https://placehold.co/1200x250/ef5350/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
 
-![EasyMED Project Banner](https://placehold.co/1200x250/f4a6a6/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
+![EasyMED Project Banner](https://placehold.co/1200x250/f0625d/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
 
-![EasyMED Project Banner](https://placehold.co/1200x250/ffb3b3/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
-
-![EasyMED Project Banner](https://placehold.co/1200x250/fecaca/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
-
-![EasyMED Project Banner](https://placehold.co/1200x250/ffd6d6/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
+![EasyMED Project Banner](https://placehold.co/1200x250/f28b82/ffffff?text=EasyMED%3A+Multi-Agent+Virtual+Standardized+Patient+Framework)
 
 <p align="center">
 
