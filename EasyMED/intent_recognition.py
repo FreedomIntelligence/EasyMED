@@ -2,7 +2,7 @@
 EasyMED - Medical Intent Recognition Module
 
 Classifies a doctor's question during a consultation into one or more
-standardized medical inquiry intent categories (30+ categories).
+standardized medical inquiry intent categories (32 categories).
 
 Intent categories cover the full spectrum of clinical history-taking:
 chief complaint, onset time, symptom characteristics, past medical history,
@@ -14,12 +14,12 @@ Usage:
     recognizer = IntentRecognizer()   # reads config from env vars
 
     intent = recognizer.recognize(
-        question="您最近有发烧吗？",
+        question="Do you have any fever?",
         history=[
-            {"question": "哪里不舒服？", "answer": "肚子疼"},
+            {"question": "Where does it hurt?", "answer": "My stomach hurts."},
         ],
     )
-    print(intent)  # e.g. "伴随症状"
+    print(intent)  # e.g. "Associated Symptoms"
 """
 
 import os
@@ -28,42 +28,42 @@ from typing import List, Dict, Optional
 
 
 # ---------------------------------------------------------------------------
-# Intent category reference
+# Intent category reference  (32 categories)
 # ---------------------------------------------------------------------------
 
 INTENT_CATEGORIES = [
-    "个人信息",
-    "主要症状",
-    "发作时间",
-    "诱因",
-    "症况部位",
-    "症状性质",
-    "持续时间频率",
-    "加重缓解情况",
-    "伴随症状",
-    "病情演变",
-    "诊疗经过",
-    "一般情况",
-    "大小便情况",
-    "体重变化",
-    "慢性病史",
-    "传染病史",
-    "手术外伤史",
-    "输血史",
-    "过敏史",
-    "预防接种史",
-    "长期用药史",
-    "旅行史",
-    "生活习惯",
-    "职业情况",
-    "冶游史",
-    "婚育史",
-    "家族史",
-    "月经史",
-    "患者理解",
-    "患者担忧",
-    "患者期望",
-    "闲聊",
+    "Personal Information",
+    "Chief Complaint",
+    "Onset Time",
+    "Triggering Factors",
+    "Symptom Location",
+    "Symptom Characteristics",
+    "Duration and Frequency",
+    "Aggravating / Relieving Factors",
+    "Associated Symptoms",
+    "Disease Progression",
+    "Prior Diagnosis and Treatment",
+    "General Condition",
+    "Bowel and Bladder Function",
+    "Weight Change",
+    "Chronic Disease History",
+    "Infectious Disease History",
+    "Surgical and Trauma History",
+    "Transfusion History",
+    "Allergy History",
+    "Vaccination History",
+    "Medication History",
+    "Travel History",
+    "Lifestyle Habits",
+    "Occupational History",
+    "Sexual History",
+    "Marital and Reproductive History",
+    "Family History",
+    "Menstrual History",
+    "Patient Understanding",
+    "Patient Concerns",
+    "Patient Expectations",
+    "Small Talk",
 ]
 
 
@@ -72,7 +72,7 @@ class IntentRecognizer:
     Classifies doctor questions into standardized medical inquiry intent categories.
 
     Each question is assigned 1–3 intent labels from the 32-category taxonomy.
-    The output is a comma-separated string, e.g. "症况部位,加重缓解情况".
+    Output is a comma-separated string, e.g. "Symptom Location, Aggravating / Relieving Factors".
 
     API configuration (same env vars as VirtualPatient):
         EASYMED_API_KEY   – required
@@ -80,73 +80,75 @@ class IntentRecognizer:
         EASYMED_MODEL     – optional, defaults to "gpt-4o"
     """
 
-    _SYSTEM_PROMPT = """你是一个专业的医疗意图识别助手，根据以下规则及专业的医疗知识，对输入语句进行分类，并返回对应的引号"："前缀内容。不做任何前缀和后缀解释。如：个人信息。你需要结合输入的**医患对话历史**，判断最新输入的语句意图，按照分类规则进行标注。
+    _SYSTEM_PROMPT = """You are a professional medical intent recognition assistant. Based on the rules below and your medical knowledge, classify the input question into one or more intent categories and return only the category name(s). No explanation, no prefix, no suffix. Example output: Personal Information
 
-请注意：每句话最多归类三个，输出格式：个人信息,诱因,一般情况
+Important: Assign at most 3 categories per question. Output format: Category1, Category2, Category3
 
-### 示例：
-- 用户输入："你多大了呀？"
-  - 输出：个人情况
-- **输入**："哪里痛？有什么让症状加重吗？体重有没有变化？"
-  - **意图分类**：症况部位,加重缓解因素,体重变化
-- **输入**："天气真好啊"
-  - **意图分类**：闲聊
-
-### **分类规则：**
-
-#### **1. 临床医疗问诊内容**
-根据患者语句内容及对话上下文，将语句归类到以下问诊意图类别：
-
-个人信息：询问病人的一般项目（如"您的姓名是？""今年多大了？"）
-主要症状：询问主要症状（如"哪里不舒服？""现在有什么症状？"）
-发作时间：询问主要症状发生时间（如"是什么时候开始的？""这种情况从什么时候有的？"）
-诱因：询问主要症状病因与诱因（如"这次是为什么会这样？""有什么诱因吗？"）
-症况部位：主要症状的部位（如"哪里痛？""不舒服的地方是哪里？"）
-症状性质：主要症状的性质（如"疼痛是刺痛还是钝痛？""是什么样的感觉？"）
-持续时间频率：主要症状的持续时间或频率（如"这个症状持续多久了？""多久发作一次？"）
-加重缓解情况：主要症状的加重及缓解情况（如"有什么让症状加重吗？""做什么会好一点？"）
-伴随症状：询问伴随症状及其特点（如"有没有别的不舒服？""还有其他症状吗？"）
-病情演变：病情的发展与演变（如"这个症状是越来越严重还是缓解了？""这些天情况有没有变化？"）
-诊疗经过：发病后的就诊、治疗情况及效果（如"之前看过医生吗？""做过什么检查吗？""用了什么药？""效果怎么样？"）
-一般情况：询问病程中的精神、睡眠、饮食情况（如"睡眠怎么样？""胃口怎么样？"）
-大小便情况：询问病程中的大小便情况（如"大便正常吗？""小便有没有异常？"）
-体重变化：询问病程中的体力、体重改变情况（如"最近体力怎么样？""体重有没有变化？"）
-慢性病史：询问是否有高血压、糖尿病、冠心病等慢性病病史（如"有高血压吗？""得过糖尿病吗？"）
-传染病史：询问是否有肝炎、结核等传染病史（如"有没有得过肝炎？""是否有结核病史？"）
-手术外伤史：询问是否有手术及外伤史（如"做过手术吗？""有没有受过外伤？"）
-输血史：询问是否有输血史（如"输过血吗？"）
-过敏史：询问药物或食物过敏情况（如"对什么药物过敏吗？""有食物过敏吗？"）
-预防接种史：询问预防接种史（如"打过疫苗吗？""最近有没有接种疫苗？"）
-长期用药史：询问目前正在规律或长期使用的所有药物，无论针对何种疾病。（如"您平时需要长期吃什么药吗？""除了这次吃的药，您还有在用其他药吗？"）
-旅行史：询问居住地，近期是否有疫区旅居史（如"住在哪里？""近期去过疫区吗？"）
-生活习惯：询问个人史中生活习惯及烟酒等嗜好（如"抽烟喝酒吗？""生活习惯怎么样？"）
-职业情况：询问个人史中职业和工作条件（如"做什么工作的？""工作环境怎么样？"）
-冶游史：高危性行为情况（如"有没有高危性行为？"）
-婚育史：询问婚育史（如"结婚了吗？""有几个孩子？"）
-家族史：询问家族史（如"家里人有没有类似的病史？""家族里有遗传病吗？"）
-月经史：询问月经史（如"初潮是什么时候""月经规律吗？""有没有痛经""最后一次月经是什么时候？"）
-患者理解：询问患者本人对病情的理解（如"您自己觉得可能是什么原因引起的呢？"）
-患者担忧：询问患者本人对病情的担忧（如"关于这个情况，您最担心的是什么？"）
-患者期望：询问患者本人对诊疗的期望（如"您希望我们能帮您解决什么问题？"）
-闲聊：寒暄、闲聊或医疗科普问题（如"九价疫苗有什么用？""天气不错啊"，"包括不明确或非医疗问诊类的内容"）
----
-
-### **特别说明：**
-- **结合对话历史**：当输入语句模糊或上下文依赖性强时，请结合医患对话历史判断语句意图。例如：
-  - 如果患者之前提到了"胃痛"，而后输入"有点久了"，则应归类为"持续时间"。
-  - 如果之前提到"头晕"，而后说"是不是贫血引起的"，则应归类为"诱因"。
-- 若输入内容过于模糊或无法明确归类，请优先归类为"闲聊"。
-- 如果语句不是问句（例如陈述句或描述句），但具备明确医疗信息，请结合上下文归类到对应问诊意图。
+### Examples:
+- Input: "How old are you?"
+  Output: Personal Information
+- Input: "Where does it hurt? Does anything make it worse? Have you noticed any weight change?"
+  Output: Symptom Location, Aggravating / Relieving Factors, Weight Change
+- Input: "Nice weather today, isn't it?"
+  Output: Small Talk
 
 ---
 
-### 示例：
-- 用户输入：`"有没有注意到其他异常的变化？"`
-  - 意图分类：伴随症状
-- **输入**：`"你平时吃什么药？"`
-  - **意图分类**：长期用药史
-- **输入**：`"天气真好啊"`
-  - **意图分类**：闲聊"""
+### Classification rules:
+
+Classify the doctor's question into one of the following 32 intent categories based on the content and conversation context:
+
+Personal Information: Asking about the patient's general demographics (e.g., "What is your name?" / "How old are you?")
+Chief Complaint: Asking about the main symptom (e.g., "What brings you in today?" / "What is bothering you?")
+Onset Time: Asking when the main symptom started (e.g., "When did this start?" / "How long have you had this?")
+Triggering Factors: Asking about the cause or precipitant (e.g., "What do you think triggered this?" / "Did anything cause it?")
+Symptom Location: Asking about where the symptom is (e.g., "Where does it hurt?" / "Where exactly do you feel uncomfortable?")
+Symptom Characteristics: Asking about the nature of the symptom (e.g., "Is it a sharp pain or a dull ache?" / "What does it feel like?")
+Duration and Frequency: Asking how long the symptom lasts or how often it occurs (e.g., "How long does it last?" / "How often does it happen?")
+Aggravating / Relieving Factors: Asking what makes it better or worse (e.g., "Does anything make it worse?" / "What gives you relief?")
+Associated Symptoms: Asking about accompanying symptoms (e.g., "Do you have any other symptoms?" / "Anything else bothering you?")
+Disease Progression: Asking how the condition has changed over time (e.g., "Is it getting better or worse?" / "Has it changed at all?")
+Prior Diagnosis and Treatment: Asking about prior medical visits, tests, or treatments (e.g., "Have you seen another doctor?" / "Have you taken any medications for this?" / "What were the results?")
+General Condition: Asking about general well-being during the illness (e.g., "How is your sleep?" / "How is your appetite?")
+Bowel and Bladder Function: Asking about bowel or urinary changes (e.g., "Are your bowel movements normal?" / "Any changes in urination?")
+Weight Change: Asking about changes in weight or energy (e.g., "Have you lost or gained any weight recently?" / "How is your energy level?")
+Chronic Disease History: Asking about chronic illnesses (e.g., "Do you have high blood pressure?" / "Any history of diabetes?")
+Infectious Disease History: Asking about infectious diseases (e.g., "Any history of hepatitis?" / "Have you ever had tuberculosis?")
+Surgical and Trauma History: Asking about past surgeries or injuries (e.g., "Have you had any surgeries?" / "Any significant injuries?")
+Transfusion History: Asking about blood transfusions (e.g., "Have you ever received a blood transfusion?")
+Allergy History: Asking about drug or food allergies (e.g., "Are you allergic to any medications?" / "Any food allergies?")
+Vaccination History: Asking about vaccinations (e.g., "Are you up to date on your vaccinations?" / "Have you received any recent vaccines?")
+Medication History: Asking about current regular or long-term medications, regardless of condition (e.g., "Are you taking any medications regularly?" / "Any other drugs besides what you mentioned?")
+Travel History: Asking about residence or recent travel to endemic areas (e.g., "Where do you live?" / "Have you traveled to any disease-endemic areas recently?")
+Lifestyle Habits: Asking about personal habits such as smoking or alcohol (e.g., "Do you smoke or drink?" / "How are your lifestyle habits?")
+Occupational History: Asking about occupation or working conditions (e.g., "What do you do for work?" / "What is your work environment like?")
+Sexual History: Asking about high-risk sexual behavior (e.g., "Any history of high-risk sexual activity?")
+Marital and Reproductive History: Asking about marriage and children (e.g., "Are you married?" / "How many children do you have?")
+Family History: Asking about family medical history (e.g., "Does anyone in your family have a similar condition?" / "Any hereditary diseases in your family?")
+Menstrual History: Asking about menstrual cycle (e.g., "When was your first period?" / "Are your periods regular?" / "Any pain during periods?" / "When was your last period?")
+Patient Understanding: Asking what the patient thinks is causing the problem (e.g., "What do you think might be causing this?")
+Patient Concerns: Asking what the patient is most worried about (e.g., "What concerns you most about this?")
+Patient Expectations: Asking what the patient hopes to get from the visit (e.g., "What would you like us to help you with today?")
+Small Talk: Greetings, small talk, health education questions, or anything unclear or unrelated to clinical history-taking (e.g., "Nice weather today" / "What is the HPV vaccine for?")
+
+---
+
+### Special notes:
+- **Use conversation history**: When the input is ambiguous or context-dependent, use the conversation history to determine intent. Examples:
+  - If the patient previously mentioned "stomach pain" and then says "it's been going on for a while," classify as "Duration and Frequency."
+  - If the patient mentioned "dizziness" and then asks "could it be from anaemia?", classify as "Triggering Factors."
+- If the input is too vague to classify, default to "Small Talk."
+- If the input is a statement rather than a question but contains clear medical information, classify by context.
+
+---
+
+### More examples:
+- Input: "Have you noticed any other unusual changes?"
+  Intent: Associated Symptoms
+- Input: "What medications are you currently taking regularly?"
+  Intent: Medication History
+- Input: "Nice weather today!"
+  Intent: Small Talk"""
 
     def __init__(
         self,
@@ -187,21 +189,22 @@ class IntentRecognizer:
                       Up to the last 5 turns are used for context.
 
         Returns:
-            A comma-separated string of intent labels, e.g. "症况部位,加重缓解情况".
-            Returns "其他" on failure.
+            A comma-separated string of intent labels,
+            e.g. "Symptom Location, Aggravating / Relieving Factors".
+            Returns "Other" on failure.
         """
         history_block = ""
         if history:
-            history_block = "\n**医患对话历史：**\n"
+            history_block = "\n**Conversation History:**\n"
             for item in (history or [])[-5:]:
-                history_block += f"医生问：{item['question']}\n"
-                history_block += f"患者答：{item['answer']}\n\n"
+                history_block += f"Doctor: {item['question']}\n"
+                history_block += f"Patient: {item['answer']}\n\n"
 
         full_prompt = (
             f"{self._SYSTEM_PROMPT}\n\n"
             f"{history_block}\n"
-            f'**输入**："{question}"\n'
-            f"**意图分类**："
+            f'**Input**: "{question}"\n'
+            f"**Intent**:"
         )
 
         try:
@@ -212,15 +215,15 @@ class IntentRecognizer:
             )
             result = response.choices[0].message.content.strip()
 
-            # Strip any accidental "：xxx" prefix the model might produce
-            if "：" in result:
-                result = result.split("：")[-1].strip()
+            # Strip any accidental colon-prefix the model might produce
+            if ":" in result:
+                result = result.split(":")[-1].strip()
 
             return result
 
         except Exception as exc:
             print(f"[IntentRecognizer] Error: {exc}")
-            return "其他"
+            return "Other"
 
 
 # ---------------------------------------------------------------------------
@@ -230,11 +233,12 @@ class IntentRecognizer:
 if __name__ == "__main__":
     recognizer = IntentRecognizer()
     test_cases = [
-        ("您哪里不舒服？", []),
-        ("什么时候开始的？", [{"question": "您哪里不舒服？", "answer": "肚子疼"}]),
-        ("有没有恶心或者呕吐？", []),
-        ("家里有没有类似的毛病？", []),
-        ("天气真好啊", []),
+        ("Where does it hurt?", []),
+        ("How long has this been going on?",
+         [{"question": "Where does it hurt?", "answer": "My stomach hurts."}]),
+        ("Do you have any nausea or vomiting?", []),
+        ("Does anyone in your family have a similar condition?", []),
+        ("Nice weather today!", []),
     ]
 
     print("=== Intent Recognition Demo ===\n")
