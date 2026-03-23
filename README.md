@@ -123,20 +123,20 @@ README.md
 
 ## Quick start
 
-### 0 · Clone the repository
+### 1 · Clone the repository
 
 ```bash
 git clone https://github.com/FreedomIntelligence/EasyMED.git
 cd EasyMED
 ```
 
-### 1 · Install dependencies
+### 2 · Install dependencies
 
 ```bash
 pip install -r EasyMED/requirements.txt
 ```
 
-### 2 · Set your API key
+### 3 · Set your API key
 
 ```bash
 # Copy and edit the example file
