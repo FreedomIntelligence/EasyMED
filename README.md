@@ -12,42 +12,130 @@
 
 </p>
 
-EasyMED is a **multi-agent virtual standardized patient (VSP) framework** designed to support clinical skills training in medical education.  
-The system separates **clinical intent recognition, patient simulation, and educational evaluation** into coordinated agents, enabling stable multi-turn dialogue, controlled information disclosure, and structured learning feedback.
+**EasyMED** is a research-oriented **multi-agent virtual standardized patient (VSP) framework** for medical education.  
+It decomposes clinical interaction into coordinated modules for **intent recognition**, **patient simulation**, and **educational evaluation**, enabling more controllable multi-turn dialogue, structured information disclosure, and pedagogically meaningful feedback.
 
-This repository contains the implementation used in the paper:
+This repository accompanies the paper:
 
 > **Human or LLM as Standardized Patients? A Comparative Study in Medical Education**
 
 ---
 
-## Repository layout
 
-```
-EasyMED/          ← core Python modules
-  consultation.py       VirtualPatient class
-  intent_recognition.py IntentRecognizer class
-  evaluation.py         ClinicalEvaluator class
-  requirements.txt
+## Overview
 
-SPBench/          ← benchmark construction and evaluation scripts
-  create_conversation.py              generate dialogues with VirtualPatient
-  create_conversation_with_intent.py  same + intent annotation per turn
-  evaluate_sp.py                      evaluate generated dialogue quality (8 dimensions)
-  SPBench_case/    ← patient case JSON files  (01.json … 58.json)
-  SPBench_taking/  ← benchmark question lists (01.json … 58.json)
+Standardized patients (SPs) are essential for training medical students in history taking, communication, and clinical reasoning. However, conventional human-SP training is often expensive, labor-intensive, and difficult to scale. EasyMED is proposed as a controllable and reusable virtual standardized patient framework that supports clinical skills training through structured multi-turn interaction.
 
-.env.example      ← copy to .env and fill in your API key
-```
+Unlike end-to-end dialogue simulators, EasyMED explicitly separates the system into coordinated functional agents. This modular design improves interaction stability, supports intent-aware response generation, and facilitates structured post-hoc educational assessment.
+
+EasyMED is designed for:
+
+- medical history-taking practice
+- virtual standardized patient simulation
+- educational evaluation of clinical dialogue
+- reproducible research on medical dialogue agents
+
+---
+
+## Highlights
+
+- **Multi-agent architecture** for controllable virtual standardized patient simulation  
+- **Intent-aware interaction** for fine-grained information disclosure  
+- **Case-grounded response generation** based on structured patient records  
+- **Trajectory-level educational evaluation** for consultation quality analysis  
+- **SPBench integration** for research benchmarking and reproducible evaluation  
+- Compatible with **OpenAI-style APIs**, including OpenAI, Azure OpenAI, and local compatible backends
+
+---
+
+## Framework Architecture
+
+> Replace the figure path below with your actual framework image path, for example `assets/framework.png`.
+
+<p align="center">
+  <img src="assets/framework.png" alt="EasyMED framework" width="900"/>
+</p>
+
+<p align="center">
+  <em>Figure 1. Overview of the EasyMED framework. The system separates intent recognition, patient simulation, and educational evaluation into coordinated agents for controllable virtual standardized patient interaction.</em>
+</p>
+
+---
+
+## Main Components
+
+EasyMED consists of three major modules.
+
+### 1. Patient Agent
+The Patient Agent simulates a virtual patient in multi-turn doctor–patient interaction.  
+It generates responses grounded in the structured case record while preserving realism and avoiding unnecessary leakage of case information.
+
+### 2. Intent Recognition Agent
+The Intent Recognition Agent identifies the clinical intent behind each learner question.  
+This module helps the system determine which part of the patient record should be disclosed and supports more faithful and controlled patient simulation.
+
+### 3. Evaluation Agent
+The Evaluation Agent reviews the full consultation trajectory after the interaction ends.  
+It compares the student’s questioning process, collected information, and submitted decisions against case-specific reference items to generate structured educational feedback.
+
+---
+
+## SPBench
+
+This repository also includes **SPBench**, a benchmark for evaluating virtual standardized patient systems.
+
+SPBench is designed to assess the quality of simulated patient interaction from an educational perspective. Rather than focusing only on static question answering, it evaluates **interaction-level patient behavior** in multi-turn consultation settings.
+
+The benchmark supports the evaluation of generated dialogue quality along multiple expert-defined dimensions, including:
+
+- query comprehension
+- case consistency
+- controlled disclosure
+- response completeness
+- logical coherence
+- language naturalness
+- conversational consistency
+- patient demeanor
+
+SPBench can be used to compare EasyMED with other virtual patient or LLM-based simulation baselines.
+
+---
+
+## Repository Structure
+
+```text
+EasyMED/
+├── consultation.py                    # VirtualPatient implementation
+├── intent_recognition.py              # IntentRecognizer implementation
+├── evaluation.py                      # ClinicalEvaluator implementation
+└── requirements.txt
+
+SPBench/
+├── create_conversation.py             # Generate dialogues with VirtualPatient
+├── create_conversation_with_intent.py # Generate dialogues with turn-level intent labels
+├── evaluate_sp.py                     # Evaluate dialogue quality on SPBench
+├── SPBench_case/                      # Patient case JSON files
+└── SPBench_taking/                    # Benchmark question lists
+
+.env.example                           # Example environment variable configuration
+README.md
 
 ---
 
 ## Quick start
 
+
+### 0 · Clone the repository
+
+```bash
+git clone <your-repository-url>
+cd EasyMED
+```
+
 ### 1 · Install dependencies
 
 ```bash
-pip install openai
+pip install -r EasyMED/requirements.txt
 ```
 
 ### 2 · Set your API key
@@ -264,7 +352,7 @@ This project is released under the **MIT License**.
 
 # Acknowledgements
 
-We thank the clinical experts, standardized patient instructors, and medical students who contributed to the dataset construction and evaluation.
+We thank the clinical experts, standardized patient instructors, medical students, and collaborators who contributed to the construction and evaluation of this project.
 
 ---
 
