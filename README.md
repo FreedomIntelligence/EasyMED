@@ -25,14 +25,14 @@ This repository contains the implementation used in the paper:
 
 ```
 EasyMED/          ← core Python modules
-  consultation.py      VirtualPatient class
+  consultation.py       VirtualPatient class
   intent_recognition.py IntentRecognizer class
-  evaluation.py        ClinicalEvaluator class
+  evaluation.py         ClinicalEvaluator class
   requirements.txt
 
 SPBench/          ← benchmark construction and evaluation scripts
   create_conversation.py              generate dialogues with VirtualPatient
-  create_conversation_with_intent.py  same + intent annotation
+  create_conversation_with_intent.py  same + intent annotation per turn
   evaluate_sp.py                      evaluate generated dialogue quality (8 dimensions)
   SPBench_case/    ← patient case JSON files  (01.json … 58.json)
   SPBench_taking/  ← benchmark question lists (01.json … 58.json)
@@ -95,20 +95,24 @@ from EasyMED.intent_recognition import IntentRecognizer
 recognizer = IntentRecognizer()
 
 intent = recognizer.recognize(
-    question="您最近睡眠怎么样？",
-    history=[{"question": "哪里不舒服？", "answer": "头疼"}],
+    question="How is your sleep lately?",
+    history=[{"question": "Where does it hurt?", "answer": "My head hurts."}],
 )
-print(intent)   # → "一般情况"
+print(intent)   # e.g. "General Condition"
 ```
 
-**32 intent categories** (abridged):
+**32 intent categories:**
 
-> 个人信息 · 主要症状 · 发作时间 · 诱因 · 症况部位 · 症状性质 ·
-> 持续时间频率 · 加重缓解情况 · 伴随症状 · 病情演变 · 诊疗经过 ·
-> 一般情况 · 大小便情况 · 体重变化 · 慢性病史 · 传染病史 ·
-> 手术外伤史 · 输血史 · 过敏史 · 预防接种史 · 长期用药史 ·
-> 旅行史 · 生活习惯 · 职业情况 · 冶游史 · 婚育史 · 家族史 ·
-> 月经史 · 患者理解 · 患者担忧 · 患者期望 · 闲聊
+> Personal Information · Chief Complaint · Onset Time · Triggering Factors ·
+> Symptom Location · Symptom Characteristics · Duration and Frequency ·
+> Aggravating / Relieving Factors · Associated Symptoms · Disease Progression ·
+> Prior Diagnosis and Treatment · General Condition · Bowel and Bladder Function ·
+> Weight Change · Chronic Disease History · Infectious Disease History ·
+> Surgical and Trauma History · Transfusion History · Allergy History ·
+> Vaccination History · Medication History · Travel History · Lifestyle Habits ·
+> Occupational History · Sexual History · Marital and Reproductive History ·
+> Family History · Menstrual History · Patient Understanding ·
+> Patient Concerns · Patient Expectations · Small Talk
 
 ### ClinicalEvaluator — `EasyMED/evaluation.py`
 
@@ -122,24 +126,34 @@ with open("case_template.json", encoding="utf-8") as f:
     template = json.load(f)
 
 session_data = {
-    "sessionId": "student_01_case01_1711900000",
-    "userId":    "student_01",
+    "sessionId": "student01_case01_1711900000",
+    "userId":    "student01",
     "caseId":    "01",
     "history": [
-        {"question": "您哪里不舒服？", "answer": "肚子疼", "intentClassification": "主要症状"},
+        {
+            "question": "Where does it hurt?",
+            "answer":   "My lower right abdomen.",
+            "intentClassification": "Symptom Location"
+        },
         ...
     ],
     "performedExams": [
-        {"itemName": "腹部触诊", "result": "右下腹压痛", "examType": "physical_exam"},
+        {
+            "itemName": "Abdominal palpation",
+            "result":   "Tenderness at McBurney's point, rebound tenderness positive",
+            "examType": "physical_exam"
+        },
     ],
     "userSubmissions": [
         {"data": {
-            "mainDiagnoses": [{"diagnosisName": "急性阑尾炎"}],
-            "differentialDiagnoses": [{"disease": "右侧输卵管炎", "status": "exclude"}],
+            "mainDiagnoses": [{"diagnosisName": "Acute appendicitis"}],
+            "differentialDiagnoses": [
+                {"disease": "Right-sided salpingitis", "status": "exclude"}
+            ],
         }}
     ],
     "userTreatments": [
-        {"data": {"treatmentPlan": "1. 急诊手术\n2. 抗感染治疗"}},
+        {"data": {"treatmentPlan": "1. Emergency appendectomy\n2. Anti-infective therapy"}},
     ],
 }
 
@@ -169,43 +183,49 @@ Each case file (`SPBench_case/<id>.json`) follows this structure:
 ```json
 {
   "caseId":          "01",
-  "caseTitle":       "急性阑尾炎",
-  "caseDescription": "...",
+  "caseTitle":       "Acute Appendicitis",
+  "caseDescription": "28-year-old male presenting with right lower quadrant pain.",
   "patientProfile": {
-    "name":                      "张三",
+    "name":                      "John Smith",
     "age_value":                 28,
-    "age_unit":                  "岁",
-    "gender":                    "男",
-    "occupation":                "教师",
-    "chief_complaint":           "右下腹疼痛6小时",
+    "age_unit":                  "years old",
+    "gender":                    "Male",
+    "occupation":                "Teacher",
+    "chief_complaint":           "Right lower abdominal pain for 6 hours",
     "present_illness_history":   "...",
-    "past_medical_history":      "无",
-    "personal_history":          "无特殊",
-    "family_history":            "无",
-    "other_medical_history":     "无",
-    "surgery_injury_history":    "无",
-    "transfusion_history":       "无",
-    "infection_history":         "无",
-    "allergy_history":           "无",
-    "menstrual_history":         "不适用",
-    "reproductive_history":      "不适用"
+    "past_medical_history":      "None",
+    "personal_history":          "Non-smoker, non-drinker",
+    "family_history":            "No family history of similar condition",
+    "other_medical_history":     "None",
+    "surgery_injury_history":    "None",
+    "transfusion_history":       "None",
+    "infection_history":         "None",
+    "allergy_history":           "None",
+    "menstrual_history":         "N/A",
+    "reproductive_history":      "N/A"
   },
-  "mustConsultionItems":    ["主要症状", "发作时间", "诱因", "伴随症状"],
-  "optionalConsultionItems":["一般情况", "家族史"],
-  "mustPhysicalExams":      ["体温", "血压", "腹部触诊"],
-  "optionalPhysicalExams":  ["直肠指检"],
-  "mustAuxiliaryLabs":      ["血常规", "腹部B超"],
-  "optionalAuxiliaryLabs":  ["腹部CT"],
-  "physicalExams":          {"体温": "38.2°C", "腹部触诊": "右下腹麦氏点压痛(+)，反跳痛(+)"},
-  "auxiliaryLabs":          {"血常规": "WBC 12.3×10⁹/L", "腹部B超": "阑尾肿胀，直径8mm"},
+  "mustConsultionItems":    ["Chief Complaint", "Onset Time", "Triggering Factors", "Associated Symptoms"],
+  "optionalConsultionItems":["General Condition", "Family History"],
+  "mustPhysicalExams":      ["Temperature", "Blood Pressure", "Abdominal palpation"],
+  "optionalPhysicalExams":  ["Rectal examination"],
+  "mustAuxiliaryLabs":      ["CBC", "Abdominal ultrasound"],
+  "optionalAuxiliaryLabs":  ["Abdominal CT"],
+  "physicalExams":          {
+    "Temperature": "38.2°C",
+    "Abdominal palpation": "McBurney's point tenderness (+), rebound tenderness (+)"
+  },
+  "auxiliaryLabs":          {
+    "CBC": "WBC 12.3×10⁹/L",
+    "Abdominal ultrasound": "Swollen appendix, diameter 8 mm"
+  },
   "diagnoses": {
-    "mainDiagnosis": {"disease": "急性阑尾炎"},
+    "mainDiagnosis": {"disease": "Acute appendicitis"},
     "differentialDiagnoses": [
-      {"disease": "右侧输卵管炎"},
-      {"disease": "右侧输尿管结石"}
+      {"disease": "Right-sided salpingitis"},
+      {"disease": "Right ureteral stone"}
     ]
   },
-  "treatments": "1. 急诊阑尾切除术\n2. 术前抗感染治疗（头孢曲松 2g iv）\n3. 补液支持"
+  "treatments": "1. Emergency appendectomy\n2. Pre-operative anti-infective therapy (ceftriaxone 2 g IV)\n3. Fluid resuscitation"
 }
 ```
 
