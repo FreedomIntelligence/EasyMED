@@ -50,8 +50,6 @@ EasyMED is designed for:
 
 ## Framework Architecture
 
-> Replace the figure path below with your actual framework image path, for example `assets/framework.png`.
-
 <p align="center">
   <img src="assets/framework.png" alt="EasyMED framework" width="900"/>
 </p>
@@ -128,7 +126,7 @@ README.md
 ### 0 · Clone the repository
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/FreedomIntelligence/EasyMED.git
 cd EasyMED
 ```
 
