@@ -1,6 +1,6 @@
 # 🏥 EasyMED: 
 
-![EasyMED Project Banner](https://placehold.co/1200x250/3367d6/ffffff?text=EasyMED%3A+AI-Powered Clinical Skills Training Platform)
+![EasyMED Project Banner](https://placehold.co/1200x250/3367d6/ffffff?text=EasyMED%3A+AI+Powered+Clinical+Skills+Training+Platform)
 
 <p align="center">
 
