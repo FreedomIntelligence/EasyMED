@@ -1,7 +1,7 @@
 # SPBench
 
 SPBench is a benchmark for evaluating the quality of AI-generated virtual patient responses.  
-It contains 58 clinical cases with expert-crafted question scripts, and provides scripts that:
+It contains clinical cases with expert-crafted question scripts, and provides scripts that:
 
 1. **Generate dialogues** – feed each question to `VirtualPatient` and collect the AI answers
 2. **Annotate with intent** – additionally label each question with the `IntentRecognizer`
@@ -13,11 +13,9 @@ It contains 58 clinical cases with expert-crafted question scripts, and provides
 
 ```
 SPBench/
-  SPBench_case/              ← 58 patient case profiles
-    01.json … 58.json
+  SPBench_case/            
+    01.json … 
 
-  SPBench_taking/            ← 58 benchmark question lists
-    01.json … 58.json
 
   create_conversation.py                ← Step 1 – generate dialogues
   create_conversation_with_intent.py    ← Step 1 (variant) – with intent labels
