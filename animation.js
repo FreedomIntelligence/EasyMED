@@ -7,21 +7,25 @@
   canvas.width = W;
   canvas.height = H;
 
-  // ── Timing ──
-  const SCENE1_END = 7;
-  const TRANS1_END = 8;
-  const SCENE2_END = 20;
-  const TRANS2_END = 21;
-  const SCENE3_END = 34;
-  const TRANS3_END = 35;
-  const SCENE4_END = 48;
-  const TRANS4_END = 49;
-  const SCENE5_END = 62;
-  const TRANS5_END = 63;
-  const SCENE6_END = 76;
-  const FADE_END = 77.5;
+  // ── Timing（动画结束后即转场，TRANS_DUR = 0.5s）──
+  const TRANS_DUR = 0.5;
+  const SCENE1_END = 5;
+  const TRANS1_END = SCENE1_END + TRANS_DUR;
+  const SCENE2_END = TRANS1_END + 4.5;
+  const TRANS2_END = SCENE2_END + TRANS_DUR;
+  const SCENE3_END = TRANS2_END + 7;
+  const TRANS3_END = SCENE3_END + TRANS_DUR;
+  const SCENE4_END = TRANS3_END + 5;
+  const TRANS4_END = SCENE4_END + TRANS_DUR;
+  const SCENE5_END = TRANS4_END + 7;
+  const TRANS5_END = SCENE5_END + TRANS_DUR;
+  const SCENE6_END = TRANS5_END + 5;
+  const TRANS6_END = SCENE6_END + TRANS_DUR;
+  const SCENE7_END = TRANS6_END + 8;
+  const FADE_END = SCENE7_END + TRANS_DUR;
   const TOTAL = FADE_END;
-  const TRANS_DUR = 1;
+  const SCENE7_DUR = SCENE7_END - TRANS6_END;
+  const SCENE7_BAR_HOLD = 0.5;
   let startTs = null;
 
   // ── Color Palette ──
@@ -75,6 +79,12 @@
     robotDark:  '#98a4b0',
     robotAccent:'#1a9a5c',
     robotEye:   '#2ecc71',
+    coatGreen:  '#5cb85c',
+    coatGrnSh:  '#449d44',
+    coatBlue:   '#5b9bd5',
+    coatBluSh:  '#3a7fc4',
+    barHumanSP: '#a8d4f0',
+    barEasyMED: '#b8e8b0',
   };
 
   // ── Utilities ──
@@ -170,27 +180,44 @@
   }
 
   function drawStudentFront(x, y, ps) {
-    // Hair
+    drawStudentFrontColored(x, y, ps, C.whiteCoat, C.coatShade);
+  }
+
+  function drawStudentFrontColored(x, y, ps, coat, coatLine) {
     fill(x - 3*ps, y - 7*ps, 6*ps, 2*ps, C.hair);
     fill(x - 3*ps, y - 6*ps, 7*ps, 2*ps, C.hair);
-    // Head
     fill(x - 2*ps, y - 4*ps, 5*ps, 4*ps, C.skin);
-    // Eyes
     fill(x - ps, y - 3*ps, ps, ps, C.eye);
     fill(x + 2*ps, y - 3*ps, ps, ps, C.eye);
-    // Body
-    fill(x - 3*ps, y, 7*ps, 5*ps, C.whiteCoat);
-    // Arms
+    fill(x - 3*ps, y, 7*ps, 5*ps, coat);
     fill(x - 4*ps, y + ps, ps, 3*ps, C.skin);
     fill(x + 4*ps, y + ps, ps, 3*ps, C.skin);
-    // Coat detail
-    fill(x, y + ps, ps, 3*ps, C.coatShade);
-    // Pants
+    fill(x, y + ps, ps, 3*ps, coatLine);
     fill(x - 2*ps, y + 5*ps, 2*ps, 3*ps, C.pants);
     fill(x + ps, y + 5*ps, 2*ps, 3*ps, C.pants);
-    // Shoes
     fill(x - 2*ps, y + 8*ps, 2*ps, ps, C.shoes);
     fill(x + ps, y + 8*ps, 2*ps, ps, C.shoes);
+  }
+
+  function drawPatientCrossfade(x, y, ps, t, morphStart, morphDur, fromRobot) {
+    var m = Math.min(Math.max((t - morphStart) / morphDur, 0), 1);
+    if (fromRobot) {
+      ctx.globalAlpha = 1 - m;
+      drawMirrored(drawRobot, x, y, ps);
+      ctx.globalAlpha = m;
+      drawMirrored(drawRealSP, x, y, ps);
+      ctx.globalAlpha = 1;
+      if (m > 0.5) drawNameTag(x, y + 44, '真人 SP', '#fff0e8', C.labelOrg);
+      else if (m < 0.5) drawNameTag(x, y + 44, 'EasyMED', '#dceee4', C.labelGrn);
+    } else {
+      ctx.globalAlpha = 1 - m;
+      drawMirrored(drawRealSP, x, y, ps);
+      ctx.globalAlpha = m;
+      drawMirrored(drawRobot, x, y, ps);
+      ctx.globalAlpha = 1;
+      if (m > 0.5) drawNameTag(x, y + 44, 'EasyMED', '#dceee4', C.labelGrn);
+      else if (m < 0.5) drawNameTag(x, y + 44, '真人 SP', '#fff0e8', C.labelOrg);
+    }
   }
 
   function drawRobot(x, y, ps) {
@@ -320,13 +347,13 @@
   }
 
   function drawOsceExamSide(cx, t, examLabel) {
-    if (t > 0.5) {
-      ctx.globalAlpha = fadeAlpha(t, 0.5, 0.6);
+    if (t > 0.3) {
+      ctx.globalAlpha = fadeAlpha(t, 0.3, 0.4);
       drawOsceStation(cx, 100, t, examLabel);
       ctx.globalAlpha = 1;
     }
-    if (t > 1.0) {
-      ctx.globalAlpha = fadeAlpha(t, 1.0, 0.5);
+    if (t > 0.6) {
+      ctx.globalAlpha = fadeAlpha(t, 0.6, 0.35);
       drawStudentSide(cx + 26, 128, 2);
       ctx.globalAlpha = 1;
     }
@@ -607,8 +634,8 @@
     drawOsceExamSide(LEFT_CX, t, 'Pre-test');
     drawOsceExamSide(RIGHT_CX, t, 'Pre-test');
 
-    if (t > 3.0) {
-      var ca = fadeAlpha(t, 3.0, 0.8);
+    if (t > 2.2) {
+      var ca = fadeAlpha(t, 2.2, 0.5);
       drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance',
         GROUP_A_PRE, null, null, GROUP_A_AVG_PRE, null, null, 1, ca, 0);
       drawMiniChart(RIGHT_CX, 162, 200, 92, 'Group B Performance',
@@ -641,9 +668,9 @@
     drawOsceExamSide(RIGHT_CX, t, 'Mid-test');
 
     // Charts: Pre-test → Mid-test (line rises to second point)
-    if (t > 1.0) {
-      var ca = fadeAlpha(t, 1.0, 0.6);
-      var lineProg = fadeAlpha(t, 2.0, 2.5);
+    if (t > 0.8) {
+      var ca = fadeAlpha(t, 0.8, 0.4);
+      var lineProg = fadeAlpha(t, 1.2, 1.4);
       drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance',
         GROUP_A_PRE, GROUP_A_MID, null, GROUP_A_AVG_PRE, GROUP_A_AVG_MID, null, 2, ca, lineProg);
       drawMiniChart(RIGHT_CX, 162, 200, 92, 'Group B Performance',
@@ -676,9 +703,9 @@
     drawOsceExamSide(RIGHT_CX, t, 'Final test');
 
     // Charts: Mid-test → Post-test (line rises to third point)
-    if (t > 1.0) {
-      var ca = fadeAlpha(t, 1.0, 0.6);
-      var lineProg = fadeAlpha(t, 2.0, 2.5);
+    if (t > 0.8) {
+      var ca = fadeAlpha(t, 0.8, 0.4);
+      var lineProg = fadeAlpha(t, 1.2, 1.4);
       drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance',
         GROUP_A_PRE, GROUP_A_MID, GROUP_A_POST,
         GROUP_A_AVG_PRE, GROUP_A_AVG_MID, GROUP_A_AVG_POST, 3, ca, lineProg);
@@ -723,33 +750,45 @@
     ctx.globalAlpha = 1;
   }
 
-  function drawTrainingDialogue(side, t, patientType) {
+  function drawTrainingDialogue(side, t, patientType, layout) {
+    var L = layout || {};
     var studentX = side === 'left' ? 62 : 306;
     var patientX = side === 'left' ? 178 : 418;
     var bubbleX = side === 'left' ? 28 : 272;
     var bubbleAnsX = side === 'left' ? 108 : 348;
     var textX = side === 'left' ? 34 : 278;
     var textAnsX = side === 'left' ? 114 : 354;
-    var qStart = side === 'left' ? 2.5 : 3.0;
-    var aStart = side === 'left' ? 4.5 : 5.0;
+    var qStart = side === 'left' ? 2.0 : 2.5;
+    var aStart = side === 'left' ? 3.5 : 4.0;
+    var bubbleQY = L.bubbleStudentY != null ? L.bubbleStudentY : 138;
+    var textQY = L.textStudentY != null ? L.textStudentY : 142;
+    var bubbleAY = L.bubbleAnsY != null ? L.bubbleAnsY : 52;
+    var textAY = L.textAnsY != null ? L.textAnsY : 56;
+    var textAY2 = L.textAnsY2 != null ? L.textAnsY2 : 69;
 
     if (t > qStart) {
       var qt = t - qStart;
-      drawBubble(bubbleX, 138, 100, 20, studentX, 'down');
-      typewrite('您哪里不舒服？', textX, 142, C.bubbleTxt, 9, qt, 6);
+      drawBubble(bubbleX, bubbleQY, 100, 20, studentX, 'down');
+      typewrite('您哪里不舒服？', textX, textQY, C.bubbleTxt, 9, qt, 6);
     }
 
     if (t > aStart) {
       var at = t - aStart;
-      drawBubble(bubbleAnsX, 52, 118, 33, patientX, 'down');
+      drawBubble(bubbleAnsX, bubbleAY, 118, 33, patientX, 'down');
       if (patientType === 'robot') {
-        typewrite('我头疼了三天，', textAnsX, 56, C.bubbleTxt, 9, at, 5);
-        if (at > 1.4) typewrite('伴有恶心呕吐...', textAnsX, 69, C.bubbleTxt, 9, at - 1.4, 5);
+        typewrite('我头疼了三天，', textAnsX, textAY, C.bubbleTxt, 9, at, 5);
+        if (at > 1.4) typewrite('伴有恶心呕吐...', textAnsX, textAY2, C.bubbleTxt, 9, at - 1.4, 5);
       } else {
-        typewrite('嗯...头疼，', textAnsX, 56, C.bubbleTxt, 9, at, 4);
-        if (at > 1.2) typewrite('大概三天了吧', textAnsX, 69, C.bubbleTxt, 9, at - 1.2, 4);
+        typewrite('嗯...头疼，', textAnsX, textAY, C.bubbleTxt, 9, at, 4);
+        if (at > 1.2) typewrite('大概三天了吧', textAnsX, textAY2, C.bubbleTxt, 9, at - 1.2, 4);
       }
     }
+  }
+
+  function scene7PatientType(side, t, morphStart, morphDur) {
+    var m = Math.min(Math.max((t - morphStart) / morphDur, 0), 1);
+    if (side === 'left') return m < 0.5 ? 'robot' : 'sp';
+    return m < 0.5 ? 'sp' : 'robot';
   }
 
   function drawTrainingScene(t, opts) {
@@ -786,8 +825,8 @@
     fill(12, 218, 212, 2, C.floorLine);
     fill(256, 218, 212, 2, C.floorLine);
 
-    if (t > 0.8) {
-      var pa = Math.min((t - 0.8) * 3, 1);
+    if (t > 0.5) {
+      var pa = Math.min((t - 0.5) * 4, 1);
       ctx.globalAlpha = pa;
       drawMirrored(drawStudentFront, 62, 168, STUDENT_PS);
       drawMirrored(drawStudentFront, 306, 168, STUDENT_PS);
@@ -838,6 +877,176 @@
     });
   }
 
+  // Bar chart — Mean Score Gain (reference figure)
+  var GAIN_BARS = [
+    { v: 16.58, c: C.barHumanSP, g: 0 },
+    { v: 21.83, c: C.barEasyMED, g: 0 },
+    { v: 6.30, c: C.barHumanSP, g: 1 },
+    { v: 7.10, c: C.barEasyMED, g: 1 }
+  ];
+  var GAIN_BAR_X = [108, 148, 318, 358];
+  var GAIN_ARROW_BAR = 1;
+
+  function drawGainBarChart(barProg) {
+    var chartX = 32;
+    var chartY = 158;
+    var chartW = 416;
+    var chartH = 104;
+    var plotBottom = chartY + chartH - 22;
+    var plotTop = chartY + 22;
+    var plotH = plotBottom - plotTop;
+    var yMax = 25;
+    var barW = 26;
+
+    fill(chartX, chartY, chartW, chartH, '#ffffff');
+    ctx.strokeStyle = '#cccccc';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(chartX + 0.5, chartY + 0.5, chartW - 1, chartH - 1);
+
+    txt('Mean Score Gain (Mid-test - Pre-test)', chartX + chartW / 2, chartY + 4, '#333333', 7, 'center');
+
+    for (var g = 0; g <= 25; g += 5) {
+      var gy = plotBottom - (g / yMax) * plotH;
+      ctx.strokeStyle = '#eeeeee';
+      ctx.beginPath();
+      ctx.moveTo(chartX + 36, gy);
+      ctx.lineTo(chartX + chartW - 12, gy);
+      ctx.stroke();
+      txt(String(g), chartX + 6, gy - 4, '#999999', 6);
+    }
+
+    txt('Low Baseline', 128, plotBottom + 6, '#666666', 7, 'center');
+    txt('High Baseline', 338, plotBottom + 6, '#666666', 7, 'center');
+
+    // Legend
+    fill(chartX + chartW - 118, chartY + 18, 10, 8, C.barHumanSP);
+    txt('Human SP', chartX + chartW - 104, chartY + 18, '#555555', 6);
+    fill(chartX + chartW - 118, chartY + 30, 10, 8, C.barEasyMED);
+    txt('EasyMED', chartX + chartW - 104, chartY + 30, '#555555', 6);
+
+    var prog = Math.min(Math.max(barProg, 0), 1);
+    var arrowBarTop = 0;
+    var arrowBarX = 0;
+
+    GAIN_BARS.forEach(function(bar, i) {
+      var bx = GAIN_BAR_X[i] - barW / 2;
+      var fullH = (bar.v / yMax) * plotH;
+      var bh = fullH * prog;
+      var by = plotBottom - bh;
+
+      ctx.fillStyle = bar.c;
+      ctx.globalAlpha = 0.88;
+      fill(bx, by, barW, bh, bar.c);
+      ctx.strokeStyle = '#555555';
+      ctx.globalAlpha = 1;
+      ctx.strokeRect(bx + 0.5, by + 0.5, barW - 1, Math.max(bh - 1, 0));
+
+      if (prog >= 0.98) {
+        txt(bar.v.toFixed(2), GAIN_BAR_X[i], by - 10, '#333333', 6, 'center');
+      }
+
+      var errH = (3 + bar.v * 0.06) * prog;
+      var errTop = plotBottom - bh;
+      ctx.strokeStyle = '#444444';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(GAIN_BAR_X[i], errTop - errH);
+      ctx.lineTo(GAIN_BAR_X[i], errTop + errH);
+      ctx.moveTo(GAIN_BAR_X[i] - 4, errTop - errH);
+      ctx.lineTo(GAIN_BAR_X[i] + 4, errTop - errH);
+      ctx.stroke();
+
+      if (i === GAIN_ARROW_BAR) {
+        arrowBarTop = by;
+        arrowBarX = GAIN_BAR_X[i];
+      }
+    });
+
+    if (prog > 0.05 && arrowBarX > 0) {
+      var ax0 = arrowBarX - 42;
+      var ay0 = arrowBarTop - 6;
+      var ax1 = arrowBarX - 6;
+      var ay1 = arrowBarTop - 2;
+      ctx.strokeStyle = '#c0392b';
+      ctx.fillStyle = '#c0392b';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(ax0, ay0);
+      ctx.lineTo(ax1, ay1);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(ax1, ay1);
+      ctx.lineTo(ax1 - 5, ay1 - 3);
+      ctx.lineTo(ax1 - 2, ay1 + 4);
+      ctx.closePath();
+      ctx.fill();
+    }
+  }
+
+  // ── Scene 7: Week 1-4 — Novices Improve Fast ──
+
+  function drawScene7(t) {
+    var LEFT_CX = 118;
+    var RIGHT_CX = 362;
+    var STUDENT_PS = 2;
+    var PATIENT_PS = 3;
+    var PATIENT_X_L = 178;
+    var PATIENT_X_R = 418;
+    var MORPH_START = 2;
+    var MORPH_DUR = 1.2;
+
+    drawSplitPanels();
+
+    if (t > 0.2) {
+      ctx.globalAlpha = fadeAlpha(t, 0.2, 0.4);
+      txt('Week 1-4：Novices Improve Fast', W / 2, 6, '#333333', 9, 'center');
+      ctx.globalAlpha = 1;
+    }
+
+    if (t > 0.3) {
+      ctx.globalAlpha = fadeAlpha(t, 0.3, 0.5);
+      txt('Group A', LEFT_CX, 22, C.labelGrn, 9, 'center');
+      txt('Group B', RIGHT_CX, 22, C.labelOrg, 9, 'center');
+      ctx.globalAlpha = 1;
+    }
+
+    fill(12, 148, 212, 2, C.floorLine);
+    fill(256, 148, 212, 2, C.floorLine);
+
+    if (t > 0.5) {
+      var pa = fadeAlpha(t, 0.5, 0.6);
+      ctx.globalAlpha = pa;
+
+      ctx.save();
+      drawMirrored(function(x, y, ps) {
+        drawStudentFrontColored(x, y, ps, C.coatGreen, C.coatGrnSh);
+      }, 62, 100, STUDENT_PS);
+      drawMirrored(function(x, y, ps) {
+        drawStudentFrontColored(x, y, ps, C.coatBlue, C.coatBluSh);
+      }, 306, 100, STUDENT_PS);
+      ctx.restore();
+
+      drawPatientCrossfade(PATIENT_X_L, 52, PATIENT_PS, t, MORPH_START, MORPH_DUR, true);
+      drawPatientCrossfade(PATIENT_X_R, 52, PATIENT_PS, t, MORPH_START, MORPH_DUR, false);
+
+      ctx.globalAlpha = 1;
+    }
+
+    var scene7DialogueLayout = {
+      bubbleStudentY: 72,
+      textStudentY: 76,
+      bubbleAnsY: 16,
+      textAnsY: 20,
+      textAnsY2: 33
+    };
+    drawTrainingDialogue('left', t, scene7PatientType('left', t, MORPH_START, MORPH_DUR), scene7DialogueLayout);
+    drawTrainingDialogue('right', t, scene7PatientType('right', t, MORPH_START, MORPH_DUR), scene7DialogueLayout);
+
+    var barGrowDur = Math.max(SCENE7_DUR - SCENE7_BAR_HOLD - 0.3, 1);
+    var barProg = fadeAlpha(t, 0.3, barGrowDur);
+    drawGainBarChart(barProg);
+  }
+
   function crossFade(elapsed, transStart, drawFrom, tFrom, drawTo, tTo) {
     var tt = (elapsed - transStart) / TRANS_DUR;
     if (tt < 0.5) {
@@ -885,9 +1094,13 @@
       crossFade(elapsed, SCENE5_END, drawScene5, SCENE5_END - TRANS4_END, drawScene6, 0);
     } else if (elapsed < SCENE6_END) {
       drawScene6(elapsed - TRANS5_END);
+    } else if (elapsed < TRANS6_END) {
+      crossFade(elapsed, SCENE6_END, drawScene6, SCENE6_END - TRANS5_END, drawScene7, 0);
+    } else if (elapsed < SCENE7_END) {
+      drawScene7(elapsed - TRANS6_END);
     } else {
-      var ft = (elapsed - SCENE6_END) / (FADE_END - SCENE6_END);
-      drawScene6(SCENE6_END - TRANS5_END);
+      var ft = (elapsed - SCENE7_END) / (FADE_END - SCENE7_END);
+      drawScene7(SCENE7_END - TRANS6_END);
       ctx.fillStyle = 'rgba(255,255,255,' + Math.min(ft * 1.5, 1) + ')';
       ctx.fillRect(0, 0, W, H);
     }
