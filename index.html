@@ -1,15 +1,21 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EasyMED - Pixel Demo</title>
-  <link rel="stylesheet" href="style.css">
+<!DOCTYPE html> <!-- 声明 HTML5 文档类型 -->
+<html lang="zh-CN"> <!-- 页面语言设置为简体中文 -->
+<head> <!-- 头部：放元信息和资源引用 -->
+  <meta charset="UTF-8"> <!-- 使用 UTF-8 编码，避免中文乱码 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 移动端视口适配 -->
+  <title>EasyMED - Pixel Demo</title> <!-- 浏览器标签页标题 -->
+  <link rel="stylesheet" href="style.css"> <!-- 引入样式文件 -->
 </head>
-<body>
-  <div id="container">
-    <canvas id="canvas"></canvas>
+<body> <!-- 页面主体 -->
+  <div id="container"> <!-- 整体容器：包含画布和播放控件 -->
+    <canvas id="canvas"></canvas> <!-- 动画渲染画布 -->
+    <div id="controls"> <!-- 底部控制条 -->
+      <button type="button" id="btn-play" aria-label="暂停">⏸</button> <!-- 播放/暂停按钮 -->
+      <span id="time-cur" class="time">0:00</span> <!-- 当前播放时间 -->
+      <input type="range" id="progress" min="0" max="45" step="0.05" value="0" aria-label="播放进度"> <!-- 进度滑块 -->
+      <span id="time-total" class="time">0:45</span> <!-- 总时长显示 -->
+    </div>
   </div>
-  <script src="animation.js"></script>
+  <script src="animation.js"></script> <!-- 引入动画主逻辑脚本 -->
 </body>
 </html>

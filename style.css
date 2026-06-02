@@ -1,25 +1,76 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; } /* 全局重置：去默认边距并统一盒模型 */
 
 body {
-  background: #ffffff;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  overflow: hidden;
+  background: #ffffff; /* 页面背景色 */
+  display: flex; /* 使用弹性布局，便于整体居中 */
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  min-height: 100vh; /* 最小高度占满视口 */
+  overflow: hidden; /* 隐藏溢出内容，避免滚动条 */
 }
 
 #container {
-  position: relative;
+  position: relative; /* 作为内部元素定位参考 */
+  display: flex; /* 容器采用弹性布局 */
+  flex-direction: column; /* 子元素纵向排列：画布在上、控件在下 */
+  align-items: center; /* 子元素水平居中 */
+}
+
+#controls {
+  display: flex; /* 控件横向排布 */
+  align-items: center; /* 控件垂直对齐 */
+  gap: 10px; /* 控件之间间距 */
+  width: 960px; /* 与画布显示宽度对齐 */
+  max-width: 100%; /* 小屏下不超出容器 */
+  padding: 10px 4px 0; /* 上边距留白，左右微调 */
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; /* 中文优先字体 */
+  font-size: 13px; /* 控件文字大小 */
+  color: #444444; /* 默认文字颜色 */
+}
+
+#btn-play {
+  flex-shrink: 0; /* 不被压缩 */
+  width: 32px; /* 按钮宽 */
+  height: 32px; /* 按钮高 */
+  border: 1px solid #d0d4dc; /* 边框样式 */
+  border-radius: 6px; /* 圆角 */
+  background: #f8f9fb; /* 背景色 */
+  cursor: pointer; /* 鼠标悬浮显示手型 */
+  font-size: 14px; /* 图标大小 */
+  line-height: 1; /* 消除多余行高 */
+  color: #333333; /* 图标颜色 */
+}
+
+#btn-play:hover {
+  background: #eef1f6; /* 悬浮态背景 */
+}
+
+#progress {
+  flex: 1; /* 占据剩余空间 */
+  height: 6px; /* 滑块轨道高度 */
+  cursor: pointer; /* 可拖动提示 */
+  accent-color: #1a9a5c; /* 滑块主题色 */
+}
+
+.time {
+  flex-shrink: 0; /* 时间文本不压缩 */
+  min-width: 36px; /* 预留宽度，避免跳动 */
+  font-variant-numeric: tabular-nums; /* 等宽数字，计时更稳定 */
+  font-size: 12px; /* 时间字号 */
+  color: #666666; /* 时间颜色 */
+}
+
+#time-total {
+  text-align: right; /* 总时长右对齐 */
 }
 
 canvas {
-  width: 960px;
-  height: 540px;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-  -ms-interpolation-mode: nearest-neighbor;
-  display: block;
-  border: 2px solid #e0e0e0;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  width: 960px; /* 显示尺寸（CSS 像素） */
+  height: 540px; /* 16:9 显示比例 */
+  image-rendering: pixelated; /* 像素风：放大保持块状边缘 */
+  image-rendering: crisp-edges; /* 兼容性补充：保持清晰边缘 */
+  -ms-interpolation-mode: nearest-neighbor; /* 旧版 IE 像素插值兼容 */
+  display: block; /* 消除行内元素空隙 */
+  border: 2px solid #e0e0e0; /* 画布边框 */
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08); /* 轻微阴影增强层次 */
 }

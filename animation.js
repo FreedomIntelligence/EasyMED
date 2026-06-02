@@ -9,6 +9,12 @@
 
   // ── Timing（动画结束后即转场，TRANS_DUR = 0.5s）──
   const TRANS_DUR = 0.5;
+  let playbackTime = 0;
+  let isPlaying = true;
+  let isScrubbing = false;
+  let lastFrameTs = null;
+  // 场景时间轴控制（单位：秒）
+  // 说明：以下常量定义了每个场景与场景转场的结束时间点。
   const SCENE1_END = 5;
   const TRANS1_END = SCENE1_END + TRANS_DUR;
   const SCENE2_END = TRANS1_END + 4.5;
@@ -26,7 +32,6 @@
   const TOTAL = FADE_END;
   const SCENE7_DUR = SCENE7_END - TRANS6_END;
   const SCENE7_BAR_HOLD = 0.5;
-  let startTs = null;
 
   // ── Color Palette ──
   const C = {
@@ -471,6 +476,7 @@
   }
 
   // ── Scene 1: Student at Computer ──
+  // 【第1个场景控制起点】从 drawScene1(t) 开始：学生在电脑前准备进入实验流程。
 
   function drawScene1(t) {
     // Wall
@@ -555,9 +561,9 @@
       ctx.fillRect(monX + 3, monY + 3, monW - 6, monH - 6);
 
       var sx = monX + 10, sy = monY + 15;
-      typewrite('EasyMED', sx, sy, C.monText, 8, st, 5);
-      if (st > 1.5) typewrite('Virtual', sx + 4, sy + 13, C.monText, 8, st - 1.5, 5);
-      if (st > 2.8) typewrite('Patient', sx + 4, sy + 26, C.monText, 8, st - 2.8, 5);
+      typewrite('Real-World', sx, sy, C.monText, 8, st, 5);
+      if (st > 1.5) typewrite('User', sx + 4, sy + 13, C.monText, 8, st - 1.5, 5);
+      if (st > 2.8) typewrite('Study', sx + 4, sy + 26, C.monText, 8, st - 2.8, 5);
 
       // Blinking cursor
       if (Math.floor(t * 2.5) % 2 === 0) {
@@ -611,6 +617,7 @@
   var GROUP_B_AVG_POST = 85;
 
   // ── Scene 2: Week 0 — Pre-test ──
+  // 【第2个场景控制起点】从 drawScene2(t) 开始：Week 0 预实验（Pre-test）对照展示。
 
   function drawScene2(t) {
     var LEFT_CX = 118;
@@ -644,6 +651,7 @@
   }
 
   // ── Scene 4: Week 2 — Mid-test ──
+  // 【第4个场景控制起点】从 drawScene4(t) 开始：Week 2 中期测试结果演进。
 
   function drawScene4(t) {
     var LEFT_CX = 118;
@@ -679,6 +687,7 @@
   }
 
   // ── Scene 6: Week 4 — Final test ──
+  // 【第6个场景控制起点】从 drawScene6(t) 开始：Week 4 终测对比展示。
 
   function drawScene6(t) {
     var LEFT_CX = 118;
@@ -850,6 +859,7 @@
   }
 
   function drawScene3(t) {
+    // 【第3个场景控制起点】Week 1 第一次训练：A 组 EasyMED，B 组真人 SP。
     drawTrainingScene(t, {
       weekTitle: 'Week 1 · 第一次训练',
       leftTrainLabel: 'EasyMED 训练',
@@ -864,6 +874,7 @@
   }
 
   function drawScene5(t) {
+    // 【第5个场景控制起点】Week 3 交换训练：A/B 两组训练对象互换。
     drawTrainingScene(t, {
       weekTitle: 'Weeks 3：交换训练',
       leftTrainLabel: '真人 SP 训练',
@@ -984,6 +995,7 @@
   }
 
   // ── Scene 7: Week 1-4 — Novices Improve Fast ──
+  // 【第7个场景控制起点】从 drawScene7(t) 开始：人物形态切换 + 总体增益柱状图。
 
   function drawScene7(t) {
     var LEFT_CX = 118;
@@ -1060,53 +1072,139 @@
     }
   }
 
+  function formatTime(sec) {
+    var s = Math.max(0, Math.min(sec, TOTAL));
+    var m = Math.floor(s / 60);
+    var r = Math.floor(s % 60);
+    return m + ':' + (r < 10 ? '0' : '') + r;
+  }
+
+  function renderAt(elapsed) {
+    ctx.imageSmoothingEnabled = false; // 关闭平滑，保持像素风格
+    ctx.clearRect(0, 0, W, H); // 每帧先清空画布，防止残影
+
+    // 总控：根据当前时间 elapsed 路由到“第几个场景”或“第几个转场”
+    if (elapsed < SCENE1_END) {
+      // 第1场景：开场淡入
+      var fadeIn = Math.min(elapsed * 2, 1); // 计算淡入透明度
+      ctx.globalAlpha = fadeIn; // 应用透明度
+      drawScene1(elapsed); // 绘制第1场景
+      ctx.globalAlpha = 1; // 还原透明度
+    } else if (elapsed < TRANS1_END) {
+      // 第1->第2转场控制
+      crossFade(elapsed, SCENE1_END, drawScene1, SCENE1_END, drawScene2, 0); // 白色交叉淡化切场
+    } else if (elapsed < SCENE2_END) {
+      // 第2场景控制
+      drawScene2(elapsed - TRANS1_END); // 传入该场景内部相对时间
+    } else if (elapsed < TRANS2_END) {
+      // 第2->第3转场控制
+      crossFade(elapsed, SCENE2_END, drawScene2, SCENE2_END - TRANS1_END, drawScene3, 0);
+    } else if (elapsed < SCENE3_END) {
+      // 第3场景控制
+      drawScene3(elapsed - TRANS2_END);
+    } else if (elapsed < TRANS3_END) {
+      // 第3->第4转场控制
+      crossFade(elapsed, SCENE3_END, drawScene3, SCENE3_END - TRANS2_END, drawScene4, 0);
+    } else if (elapsed < SCENE4_END) {
+      // 第4场景控制
+      drawScene4(elapsed - TRANS3_END);
+    } else if (elapsed < TRANS4_END) {
+      // 第4->第5转场控制
+      crossFade(elapsed, SCENE4_END, drawScene4, SCENE4_END - TRANS3_END, drawScene5, 0);
+    } else if (elapsed < SCENE5_END) {
+      // 第5场景控制
+      drawScene5(elapsed - TRANS4_END);
+    } else if (elapsed < TRANS5_END) {
+      // 第5->第6转场控制
+      crossFade(elapsed, SCENE5_END, drawScene5, SCENE5_END - TRANS4_END, drawScene6, 0);
+    } else if (elapsed < SCENE6_END) {
+      // 第6场景控制
+      drawScene6(elapsed - TRANS5_END);
+    } else if (elapsed < TRANS6_END) {
+      // 第6->第7转场控制
+      crossFade(elapsed, SCENE6_END, drawScene6, SCENE6_END - TRANS5_END, drawScene7, 0);
+    } else if (elapsed < SCENE7_END) {
+      // 第7场景控制
+      drawScene7(elapsed - TRANS6_END);
+    } else {
+      // 片尾淡出控制：第7场景停留后整体白色淡出
+      var ft = (elapsed - SCENE7_END) / (FADE_END - SCENE7_END); // 片尾淡出进度
+      drawScene7(SCENE7_END - TRANS6_END); // 固定绘制第7场景的最终状态
+      ctx.fillStyle = 'rgba(255,255,255,' + Math.min(ft * 1.5, 1) + ')'; // 叠加白色遮罩
+      ctx.fillRect(0, 0, W, H); // 渲染遮罩
+    }
+  }
+
+  function updateProgressUI() {
+    var slider = document.getElementById('progress'); // 获取进度条 DOM
+    var cur = document.getElementById('time-cur'); // 获取当前时间 DOM
+    if (!slider || !cur) return; // DOM 不存在时直接退出
+    if (!isScrubbing) slider.value = String(playbackTime); // 非拖拽时，同步进度条位置
+    cur.textContent = formatTime(playbackTime); // 刷新当前时间文案
+  }
+
+  function initPlaybackControls() {
+    var slider = document.getElementById('progress'); // 进度条
+    var btn = document.getElementById('btn-play'); // 播放按钮
+    var total = document.getElementById('time-total'); // 总时长标签
+    if (!slider || !btn || !total) return; // 任一节点不存在则不初始化
+
+    slider.max = String(TOTAL); // 进度条最大值 = 总时长
+    slider.value = '0'; // 初始从 0 秒开始
+    total.textContent = formatTime(TOTAL); // 显示总时长
+
+    function setPlayIcon() {
+      btn.textContent = isPlaying ? '\u23F8' : '\u25B6'; // 播放状态显示暂停图标，暂停状态显示播放图标
+      btn.setAttribute('aria-label', isPlaying ? '暂停' : '播放'); // 更新无障碍标签
+    }
+
+    btn.addEventListener('click', function() {
+      isPlaying = !isPlaying; // 切换播放状态
+      lastFrameTs = null; // 重置时间戳，避免恢复时跳帧
+      setPlayIcon(); // 同步按钮图标
+    });
+
+    slider.addEventListener('pointerdown', function() {
+      isScrubbing = true; // 标记“正在拖拽进度条”，暂停自动推进
+    });
+
+    slider.addEventListener('input', function() {
+      playbackTime = parseFloat(slider.value) || 0; // 拖动时即时更新播放时间
+      updateProgressUI(); // 实时刷新 UI
+    });
+
+    slider.addEventListener('pointerup', function() {
+      isScrubbing = false; // 结束拖拽
+      lastFrameTs = null; // 重置时间戳，恢复后按当前时刻平滑继续
+    });
+
+    slider.addEventListener('change', function() {
+      isScrubbing = false; // 兼容 change 事件结束状态
+      playbackTime = parseFloat(slider.value) || 0; // 最终确认进度值
+      lastFrameTs = null; // 重置时间戳
+      updateProgressUI(); // 刷新显示
+    });
+
+    setPlayIcon(); // 初始化按钮图标
+    updateProgressUI(); // 初始化时间与进度显示
+  }
+
   // ── Main Loop ──
 
   function frame(ts) {
-    if (!startTs) startTs = ts;
-    var elapsed = ((ts - startTs) / 1000) % TOTAL;
-
-    ctx.imageSmoothingEnabled = false;
-    ctx.clearRect(0, 0, W, H);
-
-    if (elapsed < SCENE1_END) {
-      var fadeIn = Math.min(elapsed * 2, 1);
-      ctx.globalAlpha = fadeIn;
-      drawScene1(elapsed);
-      ctx.globalAlpha = 1;
-    } else if (elapsed < TRANS1_END) {
-      crossFade(elapsed, SCENE1_END, drawScene1, SCENE1_END, drawScene2, 0);
-    } else if (elapsed < SCENE2_END) {
-      drawScene2(elapsed - TRANS1_END);
-    } else if (elapsed < TRANS2_END) {
-      crossFade(elapsed, SCENE2_END, drawScene2, SCENE2_END - TRANS1_END, drawScene3, 0);
-    } else if (elapsed < SCENE3_END) {
-      drawScene3(elapsed - TRANS2_END);
-    } else if (elapsed < TRANS3_END) {
-      crossFade(elapsed, SCENE3_END, drawScene3, SCENE3_END - TRANS2_END, drawScene4, 0);
-    } else if (elapsed < SCENE4_END) {
-      drawScene4(elapsed - TRANS3_END);
-    } else if (elapsed < TRANS4_END) {
-      crossFade(elapsed, SCENE4_END, drawScene4, SCENE4_END - TRANS3_END, drawScene5, 0);
-    } else if (elapsed < SCENE5_END) {
-      drawScene5(elapsed - TRANS4_END);
-    } else if (elapsed < TRANS5_END) {
-      crossFade(elapsed, SCENE5_END, drawScene5, SCENE5_END - TRANS4_END, drawScene6, 0);
-    } else if (elapsed < SCENE6_END) {
-      drawScene6(elapsed - TRANS5_END);
-    } else if (elapsed < TRANS6_END) {
-      crossFade(elapsed, SCENE6_END, drawScene6, SCENE6_END - TRANS5_END, drawScene7, 0);
-    } else if (elapsed < SCENE7_END) {
-      drawScene7(elapsed - TRANS6_END);
-    } else {
-      var ft = (elapsed - SCENE7_END) / (FADE_END - SCENE7_END);
-      drawScene7(SCENE7_END - TRANS6_END);
-      ctx.fillStyle = 'rgba(255,255,255,' + Math.min(ft * 1.5, 1) + ')';
-      ctx.fillRect(0, 0, W, H);
+    // 主循环时间推进控制：
+    // 仅在“播放中且未拖拽”时，才根据帧间隔累加播放时间。
+    if (lastFrameTs != null && isPlaying && !isScrubbing) {
+      playbackTime += (ts - lastFrameTs) / 1000;
+      if (playbackTime >= TOTAL) playbackTime = 0;
     }
+    lastFrameTs = ts;
 
+    renderAt(playbackTime);
+    updateProgressUI();
     requestAnimationFrame(frame);
   }
 
+  initPlaybackControls();
   requestAnimationFrame(frame);
 })();
