@@ -16,7 +16,7 @@
   let needsRedraw = true;
 
   // ── Data-driven timeline ──
-  const SCENE_DURS = [5, 4.5, 7, 5, 7, 5, 8];
+  const SCENE_DURS = [5, 4.5, 7, 5, 9, 5, 8];
   const sceneEnd = [];
   const transEnd = [];
   let cursor = 0;
@@ -245,7 +245,7 @@
       ctx.globalAlpha = m;
       drawMirrored(drawRealSP, x, y, ps);
       ctx.globalAlpha = 1;
-      if (m > 0.5) drawNameTag(x, tagY, '真人 SP', '#fff0e8', C.labelOrg);
+      if (m > 0.5) drawNameTag(x, tagY, 'Human SP', '#fff0e8', C.labelOrg);
       else if (m < 0.5) drawNameTag(x, tagY, 'EasyMED', '#dceee4', C.labelGrn);
     } else {
       ctx.globalAlpha = 1 - m;
@@ -254,7 +254,7 @@
       drawMirrored(drawRobot, x, y, ps);
       ctx.globalAlpha = 1;
       if (m > 0.5) drawNameTag(x, tagY, 'EasyMED', '#dceee4', C.labelGrn);
-      else if (m < 0.5) drawNameTag(x, tagY, '真人 SP', '#fff0e8', C.labelOrg);
+      else if (m < 0.5) drawNameTag(x, tagY, 'Human SP', '#fff0e8', C.labelOrg);
     }
   }
 
@@ -417,6 +417,7 @@
     if (t > 0.6) {
       ctx.globalAlpha = fadeAlpha(t, 0.6, 0.35);
       drawStudentSideColored(cx - 27, 100, 3, coat || C.whiteCoat, coatLine || C.coatShade);
+      drawNameTag(cx - 27, 134, 'Student', '#eef1f6', '#555555');
       ctx.globalAlpha = 1;
     }
   }
@@ -557,7 +558,7 @@
     ctx.globalAlpha = panelAlpha;
     if (type === 'robot') {
       drawMirrored(drawRobot, patientX, 115, 4);
-      if (t > 1.2) drawNameTag(patientX, 167, 'EasyMED', '#dceee4', C.labelGrn);
+      drawNameTag(patientX, 167, 'EasyMED', '#dceee4', C.labelGrn);
       var glitch = Math.sin(t * 17.3) * Math.sin(t * 7.1);
       if (glitch > 0.85) {
         var gy = 96 + ((t * 137.5) % 38);
@@ -566,7 +567,7 @@
       }
     } else {
       drawMirrored(drawRealSP, patientX, 115, 4);
-      if (t > 1.2) drawNameTag(patientX, 167, '真人 SP', '#fff0e8', C.labelOrg);
+      drawNameTag(patientX, 167, 'Human SP', '#fff0e8', C.labelOrg);
     }
     ctx.globalAlpha = 1;
   }
@@ -589,19 +590,19 @@
 
     if (t > qStart) {
       var qt = t - qStart;
-      drawBubble(bubbleX, bubbleQY, 100, 20, studentX, 'down');
-      typewrite('您哪里不舒服？', textX, textQY, C.bubbleTxt, 9, qt, 6);
+      drawBubble(bubbleX, bubbleQY, 140, 20, studentX, 'down');
+      typewrite('What seems to bother you?', textX, textQY, C.bubbleTxt, 8, qt, 6);
     }
 
     if (t > aStart) {
       var at = t - aStart;
-      drawBubble(bubbleAnsX, bubbleAY, 118, 33, patientX, 'down');
+      drawBubble(bubbleAnsX, bubbleAY, 128, 33, patientX, 'down');
       if (patientType === 'robot') {
-        typewrite('我头疼了三天，', textAnsX, textAY, C.bubbleTxt, 9, at, 5);
-        if (at > 1.4) typewrite('伴有恶心呕吐...', textAnsX, textAY2, C.bubbleTxt, 9, at - 1.4, 5);
+        typewrite('Headache for 3 days,', textAnsX, textAY, C.bubbleTxt, 9, at, 5);
+        if (at > 1.4) typewrite('with nausea & vomiting...', textAnsX, textAY2, C.bubbleTxt, 9, at - 1.4, 5);
       } else {
-        typewrite('嗯...头疼，', textAnsX, textAY, C.bubbleTxt, 9, at, 4);
-        if (at > 1.2) typewrite('大概三天了吧', textAnsX, textAY2, C.bubbleTxt, 9, at - 1.2, 4);
+        typewrite('Um...headache,', textAnsX, textAY, C.bubbleTxt, 9, at, 4);
+        if (at > 1.2) typewrite('about 3 days I think', textAnsX, textAY2, C.bubbleTxt, 9, at - 1.2, 4);
       }
     }
   }
@@ -647,19 +648,12 @@
       drawMirrored(function(x, y, ps) {
         drawStudentFrontColored(x, y, ps, C.coatBlue, C.coatBluSh);
       }, 306, 175, STUDENT_PS);
+      drawNameTag(62, 210, 'Student', '#eef1f6', '#555555');
+      drawNameTag(306, 210, 'Student', '#eef1f6', '#555555');
       ctx.globalAlpha = 1;
 
       drawTrainingPatient(LEFT_PX, t, opts.leftPatient, pa);
       drawTrainingPatient(RIGHT_PX, t, opts.rightPatient, pa);
-    }
-
-    if (t > 1.5) {
-      ctx.globalAlpha = 0.45;
-      txt('学生 · 医生', 62, 210, '#666666', 7, 'center');
-      txt('患者', LEFT_PX, 210, opts.leftPatient === 'robot' ? C.labelGrn : C.labelOrg, 7, 'center');
-      txt('学生 · 医生', 306, 210, '#666666', 7, 'center');
-      txt('患者', RIGHT_PX, 210, opts.rightPatient === 'robot' ? C.labelGrn : C.labelOrg, 7, 'center');
-      ctx.globalAlpha = 1;
     }
 
     drawTrainingDialogue('left', t, opts.leftPatient);
@@ -668,9 +662,9 @@
 
   function drawScene3(t) {
     drawTrainingScene(t, {
-      weekTitle: 'Week 1 · 第一次训练',
-      leftTrainLabel: 'EasyMED 训练',
-      rightTrainLabel: '真人 SP 训练',
+      weekTitle: 'Week 1 · First Training',
+      leftTrainLabel: 'EasyMED Training',
+      rightTrainLabel: 'Human SP Training',
       leftLabelColor: C.labelGrn,
       rightLabelColor: C.labelOrg,
       leftPatient: 'robot',
@@ -727,7 +721,7 @@
 
     if (t > 0.2) {
       ctx.globalAlpha = Math.min((t - 0.2) * 4, 1);
-      txt('Weeks 3：交换训练', W / 2, 6, '#555555', 10, 'center');
+      txt('Week 3 · Swap Training', W / 2, 6, '#555555', 10, 'center');
       ctx.globalAlpha = 1;
     }
 
@@ -753,7 +747,7 @@
       // Labels follow characters
       if (sp < 0.98) {
         drawNameTag(robotX, robotY + 52, 'EasyMED', '#dceee4', C.labelGrn);
-        drawNameTag(spX, spY + 44, '真人 SP', '#fff0e8', C.labelOrg);
+        drawNameTag(spX, spY + 44, 'Human SP', '#fff0e8', C.labelOrg);
       }
       ctx.globalAlpha = 1;
 
@@ -775,9 +769,9 @@
       var ta = Math.min((trainT - 0.1) * 4, 1);
       ctx.globalAlpha = ta;
       txt('Group A', LEFT_CX, 22, C.labelGrn, 10, 'center');
-      txt('真人 SP 训练', LEFT_CX, 34, C.labelOrg, 8, 'center');
+      txt('Human SP Training', LEFT_CX, 34, C.labelOrg, 8, 'center');
       txt('Group B', RIGHT_CX, 22, C.labelOrg, 10, 'center');
-      txt('EasyMED 训练', RIGHT_CX, 34, C.labelGrn, 8, 'center');
+      txt('EasyMED Training', RIGHT_CX, 34, C.labelGrn, 8, 'center');
       ctx.globalAlpha = 1;
     }
 
@@ -793,19 +787,12 @@
       drawMirrored(function(x, y, ps) {
         drawStudentFrontColored(x, y, ps, C.coatBlue, C.coatBluSh);
       }, 306, 175, STUDENT_PS);
+      drawNameTag(62, 210, 'Student', '#eef1f6', '#555555');
+      drawNameTag(306, 210, 'Student', '#eef1f6', '#555555');
       ctx.globalAlpha = 1;
 
       drawTrainingPatient(LEFT_PX, trainT, 'sp', pa);
       drawTrainingPatient(RIGHT_PX, trainT, 'robot', pa);
-    }
-
-    if (trainT > 1.2) {
-      ctx.globalAlpha = 0.45;
-      txt('学生 · 医生', 62, 210, '#666666', 7, 'center');
-      txt('患者', LEFT_PX, 210, C.labelOrg, 7, 'center');
-      txt('学生 · 医生', 306, 210, '#666666', 7, 'center');
-      txt('患者', RIGHT_PX, 210, C.labelGrn, 7, 'center');
-      ctx.globalAlpha = 1;
     }
 
     drawTrainingDialogue('left', trainT, 'sp');
@@ -991,6 +978,9 @@
       drawPatientCrossfade(PATIENT_X_L, 58, PATIENT_PS, t, MORPH_START, MORPH_DUR, true);
       drawPatientCrossfade(PATIENT_X_R, 58, PATIENT_PS, t, MORPH_START, MORPH_DUR, false);
 
+      drawNameTag(62, 140, 'Student', '#eef1f6', '#555555');
+      drawNameTag(306, 140, 'Student', '#eef1f6', '#555555');
+
       ctx.globalAlpha = 1;
     }
 
@@ -1096,7 +1086,7 @@
 
     function setPlayIcon() {
       $btn.textContent = isPlaying ? '⏸' : '▶';
-      $btn.setAttribute('aria-label', isPlaying ? '暂停' : '播放');
+      $btn.setAttribute('aria-label', isPlaying ? 'Pause' : 'Play');
     }
 
     $btn.addEventListener('click', function() {
