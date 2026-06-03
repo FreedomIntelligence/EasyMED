@@ -17,12 +17,12 @@ body {
 }
 
 #controls {
-  display: flex; /* 控件横向排布 */
-  align-items: center; /* 控件垂直对齐 */
-  gap: 10px; /* 控件之间间距 */
-  width: 960px; /* 与画布显示宽度对齐 */
-  max-width: 100%; /* 小屏下不超出容器 */
-  padding: 10px 4px 0; /* 上边距留白，左右微调 */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 1440px;
+  max-width: 100%;
+  padding: 10px 4px 0;
   font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; /* 中文优先字体 */
   font-size: 13px; /* 控件文字大小 */
   color: #444444; /* 默认文字颜色 */
@@ -65,12 +65,9 @@ body {
 }
 
 canvas {
-  width: 960px; /* 显示尺寸（CSS 像素） */
-  height: 540px; /* 16:9 显示比例 */
-  image-rendering: pixelated; /* 像素风：放大保持块状边缘 */
-  image-rendering: crisp-edges; /* 兼容性补充：保持清晰边缘 */
-  -ms-interpolation-mode: nearest-neighbor; /* 旧版 IE 像素插值兼容 */
-  display: block; /* 消除行内元素空隙 */
-  border: 2px solid #e0e0e0; /* 画布边框 */
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08); /* 轻微阴影增强层次 */
+  width: 1440px;
+  height: 810px;
+  display: block;
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 }

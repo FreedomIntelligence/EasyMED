@@ -4,8 +4,10 @@
   const canvas = document.getElementById('canvas');
   const ctx = canvas.getContext('2d');
   const W = 480, H = 270;
-  canvas.width = W;
-  canvas.height = H;
+  const SCALE = 3;
+  canvas.width = W * SCALE;
+  canvas.height = H * SCALE;
+  ctx.scale(SCALE, SCALE);
 
   // ── Timing ──
   const TRANS_DUR = 0.5;
@@ -1020,7 +1022,7 @@
   }
 
   function renderAt(elapsed) {
-    ctx.imageSmoothingEnabled = false;
+    ctx.imageSmoothingEnabled = true;
     ctx.clearRect(0, 0, W, H);
 
     // Scene 1 fade-in
