@@ -497,111 +497,14 @@
     }
   }
 
-  // ── Scene 1: Student at Computer ──
+  // ── Scene 1: Title ──
 
   function drawScene1(t) {
-    fill(0, 0, W, 200, C.wall);
-    for (let i = 1; i < 5; i++) fill(i * 100, 0, 1, 200, C.wallLine);
-
-    fill(0, 200, W, 70, C.floor);
-    for (let i = 0; i < 9; i++) fill(0, 203 + i * 8, W, 1, C.floorLine);
-
-    fill(25, 45, 65, 100, C.shelf);
-    fill(25, 45, 65, 3, '#7a6a5a');
-    fill(25, 72, 65, 2, C.shelf);
-    fill(25, 99, 65, 2, C.shelf);
-    fill(25, 126, 65, 2, C.shelf);
-    fill(25, 142, 65, 3, '#7a6a5a');
-    var bx = 29;
-    [[8,22,C.bookR],[7,20,C.bookB],[9,22,C.bookG],[6,21,C.bookY],[8,22,C.bookP]].forEach(function(b) {
-      fill(bx, 48, b[0], b[1], b[2]); bx += b[0] + 1;
-    });
-    bx = 29;
-    [[10,24,C.bookB],[8,22,C.bookR],[7,24,C.bookY],[9,23,C.bookG]].forEach(function(b) {
-      fill(bx, 75, b[0], b[1], b[2]); bx += b[0] + 1;
-    });
-    bx = 29;
-    [[8,24,C.bookP],[10,22,C.bookR],[7,24,C.bookB],[8,23,C.bookG]].forEach(function(b) {
-      fill(bx, 102, b[0], b[1], b[2]); bx += b[0] + 1;
-    });
-
-    fill(385, 35, 70, 85, C.winFrame);
-    fill(388, 38, 30, 37, C.winGlass);
-    fill(422, 38, 30, 37, C.winGlass);
-    fill(388, 79, 30, 37, C.winGlass);
-    fill(422, 79, 30, 37, C.winGlass);
-    fill(390, 40, 12, 15, C.winLight);
-    fill(424, 40, 12, 15, C.winLight);
-
-    fill(140, 50, 30, 40, '#ddd5c0');
-    fill(142, 52, 26, 36, '#ccc5b0');
-    fill(145, 55, 6, 3, '#c0392b');
-    fill(145, 60, 20, 2, '#999');
-    fill(145, 64, 18, 2, '#999');
-    fill(145, 68, 15, 2, '#999');
-
-    fill(160, 178, 190, 5, C.deskTop);
-    fill(160, 183, 190, 2, C.desk);
-    fill(163, 185, 4, 28, C.deskLeg);
-    fill(343, 185, 4, 28, C.deskLeg);
-
-    fill(220, 183, 45, 4, C.chair);
-    fill(220, 195, 45, 4, C.chairSeat);
-    fill(232, 199, 4, 14, C.deskLeg);
-    fill(252, 199, 4, 14, C.deskLeg);
-
-    var monX = 225, monY = 118, monW = 80, monH = 55;
-    fill(monX, monY, monW, monH, C.monFrame);
-    fill(monX + 3, monY + 3, monW - 6, monH - 6, C.monScreen);
-    fill(monX + 32, monY + monH, 16, 4, C.monFrame);
-    fill(monX + 24, monY + monH + 4, 32, 3, '#b0b0b0');
-
-    fill(270, 176, 32, 3, '#c0c0c0');
-    for (var ki = 0; ki < 6; ki++) fill(272 + ki * 5, 177, 3, 1, '#d8d8d8');
-
-    fill(310, 176, 7, 4, '#c0c0c0');
-    fill(312, 176, 3, 2, '#d8d8d8');
-
-    if (t > 0.8) {
-      var st = t - 0.8;
-      var ga = 0.03 + 0.02 * Math.sin(t * 3);
-      ctx.fillStyle = 'rgba(26,138,58,' + ga + ')';
-      ctx.fillRect(monX + 3, monY + 3, monW - 6, monH - 6);
-
-      var sx = monX + 10, sy = monY + 15;
-      typewrite('Real-World', sx, sy, C.monText, 8, st, 5);
-      if (st > 1.5) typewrite('User', sx + 4, sy + 13, C.monText, 8, st - 1.5, 5);
-      if (st > 2.8) typewrite('Study', sx + 4, sy + 26, C.monText, 8, st - 2.8, 5);
-
-      if (Math.floor(t * 2.5) % 2 === 0) {
-        var cursorY = sy, cursorX = sx;
-        if (st > 2.8) {
-          cursorY = sy + 26;
-          cursorX = sx + 4 + Math.min(Math.floor((st - 2.8) * 5), 7) * 6;
-        } else if (st > 1.5) {
-          cursorY = sy + 13;
-          cursorX = sx + 4 + Math.min(Math.floor((st - 1.5) * 5), 7) * 6;
-        } else {
-          cursorX = sx + Math.min(Math.floor(st * 5), 7) * 6;
-        }
-        fill(cursorX, cursorY, 5, 8, C.monText);
-      }
-
-      for (var sli = monY + 3; sli < monY + monH - 3; sli += 2) {
-        ctx.fillStyle = 'rgba(26,138,58,0.04)';
-        ctx.fillRect(monX + 3, sli, monW - 6, 1);
-      }
-    }
+    fill(0, 0, W, H, C.sceneBg);
 
     if (t > 0.3) {
-      ctx.globalAlpha = Math.min((t - 0.3) * 4, 1);
-      drawStudentSide(238, 180, 4);
-      ctx.globalAlpha = 1;
-    }
-
-    if (t > 0.8) {
-      ctx.fillStyle = 'rgba(26,138,58,0.03)';
-      ctx.fillRect(220, 176, 90, 6);
+      var st = t - 0.3;
+      typewrite('Real-World User Study', W / 2, H / 2 - 8, '#333333', 14, st, 6, 'center');
     }
   }
 
@@ -809,17 +712,104 @@
   // ── Scene 5: Week 3 — Swap training ──
 
   function drawScene5(t) {
-    drawTrainingScene(t, {
-      weekTitle: 'Weeks 3：交换训练',
-      leftTrainLabel: '真人 SP 训练',
-      rightTrainLabel: 'EasyMED 训练',
-      leftLabelColor: C.labelOrg,
-      rightLabelColor: C.labelGrn,
-      leftPatient: 'sp',
-      rightPatient: 'robot',
-      leftAmbience: 'warm',
-      rightAmbience: 'digital'
-    });
+    var LEFT_CX = 118, RIGHT_CX = 362;
+    var STUDENT_PS = 3;
+    var LEFT_PX = 178, RIGHT_PX = 418;
+    var SWAP_DUR = 1.8;
+    var SWAP_START = 0.3;
+    var SWAP_END = SWAP_START + SWAP_DUR;
+
+    fill(0, 0, W, H, C.sceneBg);
+    fill(0, 0, 236, H, C.panelLeft);
+    fill(244, 0, 236, H, C.panelRight);
+    fill(236, 0, 8, H, C.divider);
+    fill(238, 0, 4, H, C.dividerHi);
+
+    if (t > 0.2) {
+      ctx.globalAlpha = Math.min((t - 0.2) * 4, 1);
+      txt('Weeks 3：交换训练', W / 2, 6, '#555555', 10, 'center');
+      ctx.globalAlpha = 1;
+    }
+
+    // Swap animation phase
+    if (t < SWAP_END + 0.3) {
+      var sp = Math.min(Math.max((t - SWAP_START) / SWAP_DUR, 0), 1);
+      var ease = sp < 0.5 ? 2*sp*sp : 1 - 2*(1-sp)*(1-sp);
+
+      // Robot: left panel (178) → right panel (418)
+      var robotX = LEFT_PX + (RIGHT_PX - LEFT_PX) * ease;
+      // SP: right panel (418) → left panel (178)
+      var spX = RIGHT_PX + (LEFT_PX - RIGHT_PX) * ease;
+
+      // Arc: characters rise then descend during swap
+      var arc = Math.sin(sp * Math.PI) * 30;
+      var robotY = 115 - arc;
+      var spY = 115 - arc;
+
+      ctx.globalAlpha = fadeAlpha(t, 0.2, 0.4);
+      drawMirrored(drawRobot, robotX, robotY, 4);
+      drawMirrored(drawRealSP, spX, spY, 4);
+
+      // Labels follow characters
+      if (sp < 0.98) {
+        drawNameTag(robotX, robotY + 52, 'EasyMED', '#dceee4', C.labelGrn);
+        drawNameTag(spX, spY + 44, '真人 SP', '#fff0e8', C.labelOrg);
+      }
+      ctx.globalAlpha = 1;
+
+      // Swap hint arrows
+      if (sp > 0.05 && sp < 0.95) {
+        ctx.globalAlpha = 0.4 * Math.sin(sp * Math.PI);
+        txt('⇄', W / 2, 108, '#888888', 16, 'center');
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    // After swap: normal training scene content with time offset
+    var trainT = t - SWAP_END;
+    if (trainT < 0) return;
+
+    if (trainT > 0.1) {
+      drawTrainingPanelAmbience(5, 38, 226, 175, 'warm', t);
+      drawTrainingPanelAmbience(249, 38, 226, 175, 'digital', t);
+      var ta = Math.min((trainT - 0.1) * 4, 1);
+      ctx.globalAlpha = ta;
+      txt('Group A', LEFT_CX, 22, C.labelGrn, 10, 'center');
+      txt('真人 SP 训练', LEFT_CX, 34, C.labelOrg, 8, 'center');
+      txt('Group B', RIGHT_CX, 22, C.labelOrg, 10, 'center');
+      txt('EasyMED 训练', RIGHT_CX, 34, C.labelGrn, 8, 'center');
+      ctx.globalAlpha = 1;
+    }
+
+    fill(12, 218, 212, 2, C.floorLine);
+    fill(256, 218, 212, 2, C.floorLine);
+
+    if (trainT > 0.3) {
+      var pa = Math.min((trainT - 0.3) * 4, 1);
+      ctx.globalAlpha = pa;
+      drawMirrored(function(x, y, ps) {
+        drawStudentFrontColored(x, y, ps, C.coatGreen, C.coatGrnSh);
+      }, 62, 175, STUDENT_PS);
+      drawMirrored(function(x, y, ps) {
+        drawStudentFrontColored(x, y, ps, C.coatBlue, C.coatBluSh);
+      }, 306, 175, STUDENT_PS);
+      ctx.globalAlpha = 1;
+
+      drawTrainingPatient(LEFT_PX, trainT, 'sp', pa);
+      drawTrainingPatient(RIGHT_PX, trainT, 'robot', pa);
+    }
+
+    if (trainT > 1.2) {
+      ctx.globalAlpha = 0.45;
+      txt('学生 · 医生', 62, 210, '#666666', 7, 'center');
+      txt('患者', LEFT_PX, 210, C.labelOrg, 7, 'center');
+      txt('学生 · 医生', 306, 210, '#666666', 7, 'center');
+      txt('患者', RIGHT_PX, 210, C.labelGrn, 7, 'center');
+      ctx.globalAlpha = 1;
+    }
+
+    drawTrainingDialogue('left', trainT, 'sp');
+    drawTrainingDialogue('right', trainT, 'robot');
   }
 
   // ── Scene 6: Week 4 — Final test ──
@@ -862,7 +852,7 @@
   var GAIN_BAR_X = [108, 148, 318, 358];
   var GAIN_ARROW_BAR = 1;
 
-  function drawGainBarChart(barProg) {
+  function drawGainBarChart(barProgs) {
     var chartX = 32, chartY = 158, chartW = 416, chartH = 104;
     var plotBottom = chartY + chartH - 22;
     var plotTop = chartY + 22;
@@ -895,10 +885,11 @@
     fill(chartX + chartW - 118, chartY + 30, 10, 8, C.barEasyMED);
     txt('EasyMED', chartX + chartW - 104, chartY + 30, '#555555', 6);
 
-    var prog = Math.min(Math.max(barProg, 0), 1);
     var arrowBarTop = 0, arrowBarX = 0;
+    var allDone = true;
 
     GAIN_BARS.forEach(function(bar, i) {
+      var prog = Math.min(Math.max(barProgs[i] || 0, 0), 1);
       var bx = GAIN_BAR_X[i] - barW / 2;
       var fullH = (bar.v / yMax) * plotH;
       var bh = fullH * prog;
@@ -913,6 +904,8 @@
 
       if (prog >= 0.98) {
         txt(bar.v.toFixed(2), GAIN_BAR_X[i], by - 10, '#333333', 6, 'center');
+      } else {
+        allDone = false;
       }
 
       var errH = (3 + bar.v * 0.06) * prog;
@@ -932,7 +925,7 @@
       }
     });
 
-    if (prog > 0.05 && arrowBarX > 0) {
+    if (allDone && arrowBarX > 0) {
       var ax0 = arrowBarX - 42, ay0 = arrowBarTop - 6;
       var ax1 = arrowBarX - 6, ay1 = arrowBarTop - 2;
       ctx.strokeStyle = '#c0392b';
@@ -1008,9 +1001,15 @@
     drawTrainingDialogue('left', t, scene7PatientType('left', t, MORPH_START, MORPH_DUR), scene7DialogueLayout);
     drawTrainingDialogue('right', t, scene7PatientType('right', t, MORPH_START, MORPH_DUR), scene7DialogueLayout);
 
-    var BAR_GROW_DUR = 2.5;
-    var barProg = fadeAlpha(t, 0.3, BAR_GROW_DUR);
-    drawGainBarChart(barProg);
+    // Per-bar growth: different easing powers, all reach 1.0 at BAR_GROW_END
+    var BAR_GROW_END = 7;
+    var BAR_DELAYS = [0.3, 1.0, 0.6, 1.5];
+    var BAR_EASINGS = [2.2, 1.4, 1.8, 1.2];
+    var barProgs = GAIN_BARS.map(function(_, i) {
+      var raw = Math.min(Math.max((t - BAR_DELAYS[i]) / (BAR_GROW_END - BAR_DELAYS[i]), 0), 1);
+      return Math.pow(raw, 1 / BAR_EASINGS[i]);
+    });
+    drawGainBarChart(barProgs);
   }
 
   // ── Scene router ──
