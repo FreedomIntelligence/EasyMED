@@ -7,30 +7,30 @@
   canvas.width = W;
   canvas.height = H;
 
-  // ── Timing（动画结束后即转场，TRANS_DUR = 0.5s）──
+  // ── Timing ──
   const TRANS_DUR = 0.5;
   let playbackTime = 0;
   let isPlaying = true;
   let isScrubbing = false;
   let lastFrameTs = null;
-  // 场景时间轴控制（单位：秒）
-  // 说明：以下常量定义了每个场景与场景转场的结束时间点。
-  const SCENE1_END = 5;
-  const TRANS1_END = SCENE1_END + TRANS_DUR;
-  const SCENE2_END = TRANS1_END + 4.5;
-  const TRANS2_END = SCENE2_END + TRANS_DUR;
-  const SCENE3_END = TRANS2_END + 7;
-  const TRANS3_END = SCENE3_END + TRANS_DUR;
-  const SCENE4_END = TRANS3_END + 5;
-  const TRANS4_END = SCENE4_END + TRANS_DUR;
-  const SCENE5_END = TRANS4_END + 7;
-  const TRANS5_END = SCENE5_END + TRANS_DUR;
-  const SCENE6_END = TRANS5_END + 5;
-  const TRANS6_END = SCENE6_END + TRANS_DUR;
-  const SCENE7_END = TRANS6_END + 8;
-  const FADE_END = SCENE7_END + TRANS_DUR;
+  let needsRedraw = true;
+
+  // ── Data-driven timeline ──
+  const SCENE_DURS = [5, 4.5, 7, 5, 7, 5, 8];
+  const sceneEnd = [];
+  const transEnd = [];
+  let cursor = 0;
+  for (let i = 0; i < SCENE_DURS.length; i++) {
+    if (i === 0) {
+      sceneEnd[i] = SCENE_DURS[i];
+    } else {
+      sceneEnd[i] = transEnd[i - 1] + SCENE_DURS[i];
+    }
+    transEnd[i] = sceneEnd[i] + TRANS_DUR;
+  }
+  const FADE_END = sceneEnd[6] + TRANS_DUR;
   const TOTAL = FADE_END;
-  const SCENE7_DUR = SCENE7_END - TRANS6_END;
+  const SCENE7_DUR = SCENE_DURS[6];
   const SCENE7_BAR_HOLD = 0.5;
 
   // ── Color Palette ──
@@ -92,11 +92,27 @@
     barEasyMED: '#b8e8b0',
   };
 
+  // ── Structured chart data ──
+  const GROUPS = {
+    A: {
+      pre:  [72, 75, 70, 74, 68, 78, 50],
+      mid:  [85, 88, 82, 90, 84, 87, 72],
+      post: [93, 85, 86, 94, 84, 88, 85],
+      avgPre: 71, avgMid: 86, avgPost: 87,
+    },
+    B: {
+      pre:  [84, 82, 78, 74, 68, 52, 53],
+      mid:  [86, 94, 82, 83, 82, 73, 73],
+      post: [89, 95, 84, 84, 85, 80, 80],
+      avgPre: 70, avgMid: 82, avgPost: 85,
+    },
+  };
+
   // ── Utilities ──
 
   function fill(x, y, w, h, c) {
     ctx.fillStyle = c;
-    ctx.fillRect(Math.floor(x), Math.floor(y), Math.ceil(w), Math.ceil(h));
+    ctx.fillRect(x | 0, y | 0, w, h);
   }
 
   const FONT = '"PingFang SC","Hiragino Sans GB","Microsoft YaHei","WenQuanYi Micro Hei",monospace';
@@ -106,7 +122,7 @@
     ctx.font = 'bold ' + sz + 'px ' + FONT;
     ctx.textAlign = al || 'left';
     ctx.textBaseline = 'top';
-    ctx.fillText(str, Math.floor(x), Math.floor(y));
+    ctx.fillText(str, x | 0, y | 0);
   }
 
   function typewrite(str, x, y, c, sz, t, spd, al) {
@@ -157,146 +173,154 @@
     }
   }
 
-  // ── Character Drawing ──
+  function fadeAlpha(t, start, dur) {
+    return Math.min(Math.max((t - start) / dur, 0), 1);
+  }
+
+  // ── Character Drawing (3-head-body ratio) ──
+  // Anchor point (x,y) = center of neck/torso junction
+  // Head ~6ps, Body ~6ps, Legs+feet ~6ps → total ~18ps
+
+  function drawStudentSideColored(x, y, ps, coat, coatLine) {
+    // Hair
+    fill(x - 2*ps, y - 7*ps, 4*ps, 2*ps, C.hair);
+    fill(x - 3*ps, y - 5*ps, 5*ps, 2*ps, C.hair);
+    // Head
+    fill(x - 2*ps, y - 5*ps, 3*ps, 4*ps, C.hair);
+    fill(x + ps, y - 5*ps, 2*ps, 4*ps, C.skin);
+    fill(x - ps, y - 3*ps, 2*ps, 2*ps, C.skin);
+    // Eye
+    fill(x + ps, y - 4*ps, ps, ps, C.eye);
+    // Body (longer torso)
+    fill(x - 3*ps, y - ps, 5*ps, 7*ps, coat);
+    fill(x - 2*ps, y, 4*ps, 5*ps, coatLine);
+    fill(x - 3*ps, y - ps, 5*ps, 7*ps, coat);
+    // Arm
+    fill(x + 2*ps, y, 4*ps, 2*ps, coat);
+    fill(x + 6*ps, y, ps, 2*ps, C.skin);
+    // Legs (longer)
+    fill(x - 2*ps, y + 6*ps, 5*ps, 3*ps, C.pants);
+    fill(x + 3*ps, y + 6*ps, 2*ps, 3*ps, C.pants);
+    // Shoes
+    fill(x - 2*ps, y + 9*ps, 3*ps, ps, C.shoes);
+    fill(x + 4*ps, y + 9*ps, 2*ps, ps, C.shoes);
+  }
 
   function drawStudentSide(x, y, ps) {
-    // Seated profile facing right
+    drawStudentSideColored(x, y, ps, C.whiteCoat, C.coatShade);
+  }
+
+  function drawStudentFrontColored(x, y, ps, coat, coatLine) {
     // Hair
-    fill(x - 2*ps, y - 8*ps, 4*ps, 2*ps, C.hair);
-    fill(x - 3*ps, y - 6*ps, 5*ps, 2*ps, C.hair);
-    // Head (face visible on right)
-    fill(x - 2*ps, y - 6*ps, 3*ps, 4*ps, C.hair);
-    fill(x + ps, y - 6*ps, 2*ps, 4*ps, C.skin);
-    fill(x - ps, y - 4*ps, 2*ps, 2*ps, C.skin);
-    // Eye
-    fill(x + ps, y - 5*ps, ps, ps, C.eye);
-    // White coat body
-    fill(x - 3*ps, y - 2*ps, 5*ps, 5*ps, C.whiteCoat);
-    fill(x - 2*ps, y - ps, 4*ps, 4*ps, C.coatShade);
-    fill(x - 3*ps, y - 2*ps, 5*ps, 5*ps, C.whiteCoat);
-    // Arm reaching to keyboard
-    fill(x + 2*ps, y - ps, 4*ps, 2*ps, C.whiteCoat);
-    fill(x + 6*ps, y - ps, ps, 2*ps, C.skin);
-    // Legs (seated)
-    fill(x - 2*ps, y + 3*ps, 5*ps, 2*ps, C.pants);
-    fill(x + 3*ps, y + 3*ps, 2*ps, 2*ps, C.pants);
-    // Feet
-    fill(x + 4*ps, y + 5*ps, 2*ps, ps, C.shoes);
+    fill(x - 3*ps, y - 7*ps, 6*ps, 2*ps, C.hair);
+    fill(x - 3*ps, y - 6*ps, 7*ps, ps, C.hair);
+    // Face
+    fill(x - 2*ps, y - 5*ps, 5*ps, 4*ps, C.skin);
+    // Eyes
+    fill(x - ps, y - 4*ps, ps, ps, C.eye);
+    fill(x + 2*ps, y - 4*ps, ps, ps, C.eye);
+    // Body (longer torso)
+    fill(x - 3*ps, y - ps, 7*ps, 7*ps, coat);
+    fill(x - 4*ps, y, ps, 4*ps, C.skin);
+    fill(x + 4*ps, y, ps, 4*ps, C.skin);
+    fill(x, y, ps, 5*ps, coatLine);
+    // Legs (longer)
+    fill(x - 2*ps, y + 6*ps, 2*ps, 4*ps, C.pants);
+    fill(x + ps, y + 6*ps, 2*ps, 4*ps, C.pants);
+    // Shoes
+    fill(x - 2*ps, y + 10*ps, 2*ps, ps, C.shoes);
+    fill(x + ps, y + 10*ps, 2*ps, ps, C.shoes);
   }
 
   function drawStudentFront(x, y, ps) {
     drawStudentFrontColored(x, y, ps, C.whiteCoat, C.coatShade);
   }
 
-  function drawStudentFrontColored(x, y, ps, coat, coatLine) {
-    fill(x - 3*ps, y - 7*ps, 6*ps, 2*ps, C.hair);
-    fill(x - 3*ps, y - 6*ps, 7*ps, 2*ps, C.hair);
-    fill(x - 2*ps, y - 4*ps, 5*ps, 4*ps, C.skin);
-    fill(x - ps, y - 3*ps, ps, ps, C.eye);
-    fill(x + 2*ps, y - 3*ps, ps, ps, C.eye);
-    fill(x - 3*ps, y, 7*ps, 5*ps, coat);
-    fill(x - 4*ps, y + ps, ps, 3*ps, C.skin);
-    fill(x + 4*ps, y + ps, ps, 3*ps, C.skin);
-    fill(x, y + ps, ps, 3*ps, coatLine);
-    fill(x - 2*ps, y + 5*ps, 2*ps, 3*ps, C.pants);
-    fill(x + ps, y + 5*ps, 2*ps, 3*ps, C.pants);
-    fill(x - 2*ps, y + 8*ps, 2*ps, ps, C.shoes);
-    fill(x + ps, y + 8*ps, 2*ps, ps, C.shoes);
-  }
-
   function drawPatientCrossfade(x, y, ps, t, morphStart, morphDur, fromRobot) {
     var m = Math.min(Math.max((t - morphStart) / morphDur, 0), 1);
+    var tagY = y + 13*ps;
     if (fromRobot) {
       ctx.globalAlpha = 1 - m;
       drawMirrored(drawRobot, x, y, ps);
       ctx.globalAlpha = m;
       drawMirrored(drawRealSP, x, y, ps);
       ctx.globalAlpha = 1;
-      if (m > 0.5) drawNameTag(x, y + 44, '真人 SP', '#fff0e8', C.labelOrg);
-      else if (m < 0.5) drawNameTag(x, y + 44, 'EasyMED', '#dceee4', C.labelGrn);
+      if (m > 0.5) drawNameTag(x, tagY, '真人 SP', '#fff0e8', C.labelOrg);
+      else if (m < 0.5) drawNameTag(x, tagY, 'EasyMED', '#dceee4', C.labelGrn);
     } else {
       ctx.globalAlpha = 1 - m;
       drawMirrored(drawRealSP, x, y, ps);
       ctx.globalAlpha = m;
       drawMirrored(drawRobot, x, y, ps);
       ctx.globalAlpha = 1;
-      if (m > 0.5) drawNameTag(x, y + 44, 'EasyMED', '#dceee4', C.labelGrn);
-      else if (m < 0.5) drawNameTag(x, y + 44, '真人 SP', '#fff0e8', C.labelOrg);
+      if (m > 0.5) drawNameTag(x, tagY, 'EasyMED', '#dceee4', C.labelGrn);
+      else if (m < 0.5) drawNameTag(x, tagY, '真人 SP', '#fff0e8', C.labelOrg);
     }
   }
 
   function drawRobot(x, y, ps) {
     // Antenna
-    fill(x, y - 10*ps, ps, 3*ps, C.robotDark);
-    fill(x - ps, y - 11*ps, 3*ps, ps, C.robotAccent);
-
-    // Head
-    fill(x - 3*ps, y - 8*ps, 7*ps, 5*ps, C.robotBody);
-    fill(x - 3*ps, y - 8*ps, 7*ps, ps, C.robotDark);
-    fill(x - 2*ps, y - 7*ps, 5*ps, 3*ps, C.robotLight);
-
+    fill(x, y - 9*ps, ps, 3*ps, C.robotDark);
+    fill(x - ps, y - 10*ps, 3*ps, ps, C.robotAccent);
+    // Head (6ps)
+    fill(x - 3*ps, y - 7*ps, 7*ps, 5*ps, C.robotBody);
+    fill(x - 3*ps, y - 7*ps, 7*ps, ps, C.robotDark);
+    fill(x - 2*ps, y - 6*ps, 5*ps, 3*ps, C.robotLight);
     // LED eyes
-    fill(x - 2*ps, y - 6*ps, 2*ps, 2*ps, C.robotEye);
-    fill(x + ps, y - 6*ps, 2*ps, 2*ps, C.robotEye);
-    fill(x - ps, y - 5*ps, ps, ps, '#ffffff');
-    fill(x + 2*ps, y - 5*ps, ps, ps, '#ffffff');
-
+    fill(x - 2*ps, y - 5*ps, 2*ps, 2*ps, C.robotEye);
+    fill(x + ps, y - 5*ps, 2*ps, 2*ps, C.robotEye);
+    fill(x - ps, y - 4*ps, ps, ps, '#ffffff');
+    fill(x + 2*ps, y - 4*ps, ps, ps, '#ffffff');
     // Speaker grille
-    fill(x - 2*ps, y - 3*ps, 5*ps, ps, C.robotDark);
-    fill(x - ps, y - 3*ps, ps, ps, C.robotAccent);
-    fill(x, y - 3*ps, ps, ps, C.robotAccent);
-    fill(x + ps, y - 3*ps, ps, ps, C.robotAccent);
-
+    fill(x - 2*ps, y - 2*ps, 5*ps, ps, C.robotDark);
+    fill(x - ps, y - 2*ps, ps, ps, C.robotAccent);
+    fill(x, y - 2*ps, ps, ps, C.robotAccent);
+    fill(x + ps, y - 2*ps, ps, ps, C.robotAccent);
     // Neck
-    fill(x - ps, y - 2*ps, 3*ps, ps, C.robotDark);
-
-    // Body
-    fill(x - 4*ps, y - ps, 9*ps, 7*ps, C.robotBody);
-    fill(x - 3*ps, y, 7*ps, 5*ps, C.robotLight);
-    fill(x - 4*ps, y - ps, 9*ps, ps, C.robotDark);
-
+    fill(x - ps, y - ps, 3*ps, ps, C.robotDark);
+    // Body (longer: 8ps)
+    fill(x - 4*ps, y, 9*ps, 8*ps, C.robotBody);
+    fill(x - 3*ps, y + ps, 7*ps, 6*ps, C.robotLight);
+    fill(x - 4*ps, y, 9*ps, ps, C.robotDark);
     // Chest screen
-    fill(x - 2*ps, y + ps, 5*ps, 3*ps, '#dceee4');
-    fill(x - ps, y + 2*ps, 3*ps, ps, C.robotAccent);
-
-    // Arms
-    fill(x - 6*ps, y, 2*ps, 5*ps, C.robotDark);
-    fill(x + 5*ps, y, 2*ps, 5*ps, C.robotDark);
-    fill(x - 6*ps, y + 5*ps, 2*ps, ps, C.robotBody);
-    fill(x + 5*ps, y + 5*ps, 2*ps, ps, C.robotBody);
-
-    // Legs
-    fill(x - 3*ps, y + 6*ps, 3*ps, 3*ps, C.robotDark);
-    fill(x + ps, y + 6*ps, 3*ps, 3*ps, C.robotDark);
-
+    fill(x - 2*ps, y + 2*ps, 5*ps, 3*ps, '#dceee4');
+    fill(x - ps, y + 3*ps, 3*ps, ps, C.robotAccent);
+    // Arms (longer)
+    fill(x - 6*ps, y + ps, 2*ps, 6*ps, C.robotDark);
+    fill(x + 5*ps, y + ps, 2*ps, 6*ps, C.robotDark);
+    fill(x - 6*ps, y + 7*ps, 2*ps, ps, C.robotBody);
+    fill(x + 5*ps, y + 7*ps, 2*ps, ps, C.robotBody);
+    // Legs (longer: 5ps)
+    fill(x - 3*ps, y + 8*ps, 3*ps, 4*ps, C.robotDark);
+    fill(x + ps, y + 8*ps, 3*ps, 4*ps, C.robotDark);
     // Feet
-    fill(x - 4*ps, y + 9*ps, 4*ps, ps, C.robotDark);
-    fill(x + ps, y + 9*ps, 4*ps, ps, C.robotDark);
+    fill(x - 4*ps, y + 12*ps, 4*ps, ps, C.robotDark);
+    fill(x + ps, y + 12*ps, 4*ps, ps, C.robotDark);
   }
 
   function drawRealSP(x, y, ps) {
-    // Dark hair
+    // Hair
     fill(x - 3*ps, y - 7*ps, 6*ps, 2*ps, C.darkHair);
     fill(x - 3*ps, y - 6*ps, 7*ps, ps, C.darkHair);
-    // Head
+    // Face
     fill(x - 2*ps, y - 5*ps, 5*ps, 4*ps, C.skin);
     // Eyes
     fill(x - ps, y - 4*ps, ps, ps, C.eye);
     fill(x + 2*ps, y - 4*ps, ps, ps, C.eye);
     // Mouth
     fill(x, y - 2*ps, ps, ps, C.skinShade);
-    // Shirt
-    fill(x - 3*ps, y - ps, 7*ps, 6*ps, C.shirt);
-    fill(x, y, ps, 4*ps, C.shirtShade);
-    // Arms
-    fill(x - 4*ps, y, ps, 3*ps, C.skin);
-    fill(x + 4*ps, y, ps, 3*ps, C.skin);
-    // Jeans
-    fill(x - 2*ps, y + 5*ps, 2*ps, 3*ps, C.jeans);
-    fill(x + ps, y + 5*ps, 2*ps, 3*ps, C.jeans);
+    // Shirt (longer torso)
+    fill(x - 3*ps, y - ps, 7*ps, 7*ps, C.shirt);
+    fill(x, y, ps, 5*ps, C.shirtShade);
+    // Arms (longer)
+    fill(x - 4*ps, y, ps, 4*ps, C.skin);
+    fill(x + 4*ps, y, ps, 4*ps, C.skin);
+    // Jeans (longer legs)
+    fill(x - 2*ps, y + 6*ps, 2*ps, 4*ps, C.jeans);
+    fill(x + ps, y + 6*ps, 2*ps, 4*ps, C.jeans);
     // Shoes
-    fill(x - 2*ps, y + 8*ps, 2*ps, ps, C.shoes);
-    fill(x + ps, y + 8*ps, 2*ps, ps, C.shoes);
+    fill(x - 2*ps, y + 10*ps, 2*ps, ps, C.shoes);
+    fill(x + ps, y + 10*ps, 2*ps, ps, C.shoes);
   }
 
   function drawMirrored(fn, x, y, ps) {
@@ -314,7 +338,7 @@
     fill(tx, y, tw, 14, bg);
     ctx.strokeStyle = fg;
     ctx.lineWidth = 1;
-    ctx.strokeRect(Math.floor(tx) + 0.5, Math.floor(y) + 0.5, tw - 1, 13);
+    ctx.strokeRect((tx | 0) + 0.5, (y | 0) + 0.5, tw - 1, 13);
     txt(label, cx, y + 2, fg, 8, 'center');
   }
 
@@ -326,11 +350,44 @@
     fill(238, 0, 4, H, C.dividerHi);
   }
 
-  function fadeAlpha(t, start, dur) {
-    return Math.min(Math.max((t - start) / dur, 0), 1);
+  // ── Chart helpers (extracted from drawMiniChart for GC) ──
+
+  var CHART_STU_COLORS = [
+    '#4ecdc4', '#a8d8ea', '#c3b1e1', '#b5e8b0', '#d5d5d5',
+    '#e8f5a0', '#ffe66d', '#ffb3b3', '#b3d9ff', '#e0c3fc',
+    '#ffd4a3', '#f5c6d6', '#e8e8e8'
+  ];
+
+  function scoreToY(score, chartTop, chartH) {
+    return chartTop + chartH - ((score - 40) / 60) * chartH;
   }
 
-  // Exam station (desk + OSCE Test)
+  function chartDrawSeg(xa, ya, xb, yb, color, alpha, pop, p) {
+    var px = xa + (xb - xa) * p;
+    var py = ya + (yb - ya) * p;
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 1;
+    ctx.globalAlpha = alpha * pop;
+    ctx.beginPath();
+    ctx.moveTo(xa, ya);
+    ctx.lineTo(px, py);
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  function chartDrawDot(x, y, col, pop) {
+    ctx.globalAlpha = 0.45 * pop;
+    fill(x - 2, y - 2, 4, 4, col);
+    ctx.globalAlpha = 1;
+  }
+
+  function chartDrawAvgDot(x, y, pop) {
+    ctx.globalAlpha = pop;
+    fill(x - 3, y - 3, 6, 6, '#222222');
+    ctx.globalAlpha = 1;
+  }
+
+  // Exam station
   function drawOsceStation(cx, baseY, t, examLabel) {
     var deskW = 72, deskH = 5;
     var dx = cx - deskW / 2;
@@ -351,7 +408,7 @@
     }
   }
 
-  function drawOsceExamSide(cx, t, examLabel) {
+  function drawOsceExamSide(cx, t, examLabel, coat, coatLine) {
     if (t > 0.3) {
       ctx.globalAlpha = fadeAlpha(t, 0.3, 0.4);
       drawOsceStation(cx, 100, t, examLabel);
@@ -359,23 +416,14 @@
     }
     if (t > 0.6) {
       ctx.globalAlpha = fadeAlpha(t, 0.6, 0.35);
-      drawStudentSide(cx + 26, 128, 2);
+      drawStudentSideColored(cx - 27, 100, 3, coat || C.whiteCoat, coatLine || C.coatShade);
       ctx.globalAlpha = 1;
     }
   }
 
-  // Mini chart — only Pre-test point (first x)
-  var CHART_STU_COLORS = [
-    '#4ecdc4', '#a8d8ea', '#c3b1e1', '#b5e8b0', '#d5d5d5',
-    '#e8f5a0', '#ffe66d', '#ffb3b3', '#b3d9ff', '#e0c3fc',
-    '#ffd4a3', '#f5c6d6', '#e8e8e8'
-  ];
+  // ── Mini Chart ──
 
-  function scoreToY(score, chartTop, chartH) {
-    return chartTop + chartH - ((score - 40) / 60) * chartH;
-  }
-
-  function drawMiniChart(cx, cy, cw, ch, title, preScores, midScores, postScores, avgPre, avgMid, avgPost, pointCount, reveal, lineProgress) {
+  function drawMiniChart(cx, cy, cw, ch, title, grp, pointCount, reveal, lineProgress) {
     var chartL = cx - cw / 2;
     var chartTop = cy;
     var plotL = chartL + 28;
@@ -409,92 +457,61 @@
     txt('Mid-test', x1 - 16, plotY + plotH + 4, pointCount >= 2 ? '#666666' : '#cccccc', 6);
     txt('Post-test', x2 - 20, plotY + plotH + 4, pointCount >= 3 ? '#666666' : '#cccccc', 6);
 
-    function drawSeg(xa, ya, xb, yb, color, alpha, p) {
-      var px = xa + (xb - xa) * p;
-      var py = ya + (yb - ya) * p;
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 1;
-      ctx.globalAlpha = alpha * pop;
-      ctx.beginPath();
-      ctx.moveTo(xa, ya);
-      ctx.lineTo(px, py);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-    }
-
-    function drawDot(x, y, col) {
-      var r = 2;
-      ctx.globalAlpha = 0.45 * pop;
-      fill(x - r, y - r, r * 2, r * 2, col);
-      ctx.globalAlpha = 1;
-    }
-
-    function drawAvgDot(x, y) {
-      ctx.globalAlpha = pop;
-      fill(x - 3, y - 3, 6, 6, '#222222');
-      ctx.globalAlpha = 1;
-    }
-
-    preScores.forEach(function(sc, i) {
+    grp.pre.forEach(function(sc, i) {
       var y0 = scoreToY(sc, plotY, plotH);
       var col = CHART_STU_COLORS[i % CHART_STU_COLORS.length];
-      drawDot(x0, y0, col);
+      chartDrawDot(x0, y0, col, pop);
 
-      if (pointCount >= 2 && midScores) {
-        var y1 = scoreToY(midScores[i], plotY, plotH);
+      if (pointCount >= 2) {
+        var y1 = scoreToY(grp.mid[i], plotY, plotH);
         var preMidProg = pointCount >= 3 ? 1 : prog;
-        drawSeg(x0, y0, x1, y1, col, 0.45, preMidProg);
-        if (preMidProg >= 0.98) drawDot(x1, y1, col);
+        chartDrawSeg(x0, y0, x1, y1, col, 0.45, pop, preMidProg);
+        if (preMidProg >= 0.98) chartDrawDot(x1, y1, col, pop);
 
-        if (pointCount >= 3 && postScores) {
-          var y2 = scoreToY(postScores[i], plotY, plotH);
-          drawSeg(x1, y1, x2, y2, col, 0.45, prog);
-          if (prog >= 0.98) drawDot(x2, y2, col);
+        if (pointCount >= 3) {
+          var y2 = scoreToY(grp.post[i], plotY, plotH);
+          chartDrawSeg(x1, y1, x2, y2, col, 0.45, pop, prog);
+          if (prog >= 0.98) chartDrawDot(x2, y2, col, pop);
         }
       }
     });
 
-    var ay0 = scoreToY(avgPre, plotY, plotH);
-    drawAvgDot(x0, ay0);
+    var ay0 = scoreToY(grp.avgPre, plotY, plotH);
+    chartDrawAvgDot(x0, ay0, pop);
 
-    if (pointCount >= 2 && avgMid != null) {
-      var ay1 = scoreToY(avgMid, plotY, plotH);
+    if (pointCount >= 2) {
+      var ay1 = scoreToY(grp.avgMid, plotY, plotH);
       var preMidAvg = pointCount >= 3 ? 1 : prog;
       ctx.setLineDash([3, 2]);
-      drawSeg(x0, ay0, x1, ay1, '#222222', 1, preMidAvg);
+      chartDrawSeg(x0, ay0, x1, ay1, '#222222', 1, pop, preMidAvg);
       ctx.setLineDash([]);
-      if (preMidAvg >= 0.98) drawAvgDot(x1, ay1);
+      if (preMidAvg >= 0.98) chartDrawAvgDot(x1, ay1, pop);
 
-      if (pointCount >= 3 && avgPost != null) {
-        var ay2 = scoreToY(avgPost, plotY, plotH);
+      if (pointCount >= 3) {
+        var ay2 = scoreToY(grp.avgPost, plotY, plotH);
         ctx.setLineDash([3, 2]);
-        drawSeg(x1, ay1, x2, ay2, '#222222', 1, prog);
+        chartDrawSeg(x1, ay1, x2, ay2, '#222222', 1, pop, prog);
         ctx.setLineDash([]);
-        if (prog >= 0.98) drawAvgDot(x2, ay2);
+        if (prog >= 0.98) chartDrawAvgDot(x2, ay2, pop);
       }
     }
   }
 
   // ── Scene 1: Student at Computer ──
-  // 【第1个场景控制起点】从 drawScene1(t) 开始：学生在电脑前准备进入实验流程。
 
   function drawScene1(t) {
-    // Wall
     fill(0, 0, W, 200, C.wall);
     for (let i = 1; i < 5; i++) fill(i * 100, 0, 1, 200, C.wallLine);
 
-    // Floor
     fill(0, 200, W, 70, C.floor);
     for (let i = 0; i < 9; i++) fill(0, 203 + i * 8, W, 1, C.floorLine);
 
-    // Bookshelf (left)
     fill(25, 45, 65, 100, C.shelf);
     fill(25, 45, 65, 3, '#7a6a5a');
     fill(25, 72, 65, 2, C.shelf);
     fill(25, 99, 65, 2, C.shelf);
     fill(25, 126, 65, 2, C.shelf);
     fill(25, 142, 65, 3, '#7a6a5a');
-    // Books
     var bx = 29;
     [[8,22,C.bookR],[7,20,C.bookB],[9,22,C.bookG],[6,21,C.bookY],[8,22,C.bookP]].forEach(function(b) {
       fill(bx, 48, b[0], b[1], b[2]); bx += b[0] + 1;
@@ -508,7 +525,6 @@
       fill(bx, 102, b[0], b[1], b[2]); bx += b[0] + 1;
     });
 
-    // Window (right)
     fill(385, 35, 70, 85, C.winFrame);
     fill(388, 38, 30, 37, C.winGlass);
     fill(422, 38, 30, 37, C.winGlass);
@@ -517,7 +533,6 @@
     fill(390, 40, 12, 15, C.winLight);
     fill(424, 40, 12, 15, C.winLight);
 
-    // Poster on wall
     fill(140, 50, 30, 40, '#ddd5c0');
     fill(142, 52, 26, 36, '#ccc5b0');
     fill(145, 55, 6, 3, '#c0392b');
@@ -525,37 +540,30 @@
     fill(145, 64, 18, 2, '#999');
     fill(145, 68, 15, 2, '#999');
 
-    // Desk
     fill(160, 178, 190, 5, C.deskTop);
     fill(160, 183, 190, 2, C.desk);
     fill(163, 185, 4, 28, C.deskLeg);
     fill(343, 185, 4, 28, C.deskLeg);
 
-    // Chair
     fill(220, 183, 45, 4, C.chair);
     fill(220, 195, 45, 4, C.chairSeat);
     fill(232, 199, 4, 14, C.deskLeg);
     fill(252, 199, 4, 14, C.deskLeg);
 
-    // Monitor
     var monX = 225, monY = 118, monW = 80, monH = 55;
     fill(monX, monY, monW, monH, C.monFrame);
     fill(monX + 3, monY + 3, monW - 6, monH - 6, C.monScreen);
     fill(monX + 32, monY + monH, 16, 4, C.monFrame);
     fill(monX + 24, monY + monH + 4, 32, 3, '#b0b0b0');
 
-    // Keyboard
     fill(270, 176, 32, 3, '#c0c0c0');
     for (var ki = 0; ki < 6; ki++) fill(272 + ki * 5, 177, 3, 1, '#d8d8d8');
 
-    // Mouse
     fill(310, 176, 7, 4, '#c0c0c0');
     fill(312, 176, 3, 2, '#d8d8d8');
 
-    // Monitor screen content
     if (t > 0.8) {
       var st = t - 0.8;
-      // Screen glow
       var ga = 0.03 + 0.02 * Math.sin(t * 3);
       ctx.fillStyle = 'rgba(26,138,58,' + ga + ')';
       ctx.fillRect(monX + 3, monY + 3, monW - 6, monH - 6);
@@ -565,64 +573,42 @@
       if (st > 1.5) typewrite('User', sx + 4, sy + 13, C.monText, 8, st - 1.5, 5);
       if (st > 2.8) typewrite('Study', sx + 4, sy + 26, C.monText, 8, st - 2.8, 5);
 
-      // Blinking cursor
       if (Math.floor(t * 2.5) % 2 === 0) {
-        var cy = sy, cx = sx;
+        var cursorY = sy, cursorX = sx;
         if (st > 2.8) {
-          cy = sy + 26;
-          cx = sx + 4 + Math.min(Math.floor((st - 2.8) * 5), 7) * 6;
+          cursorY = sy + 26;
+          cursorX = sx + 4 + Math.min(Math.floor((st - 2.8) * 5), 7) * 6;
         } else if (st > 1.5) {
-          cy = sy + 13;
-          cx = sx + 4 + Math.min(Math.floor((st - 1.5) * 5), 7) * 6;
+          cursorY = sy + 13;
+          cursorX = sx + 4 + Math.min(Math.floor((st - 1.5) * 5), 7) * 6;
         } else {
-          cx = sx + Math.min(Math.floor(st * 5), 7) * 6;
+          cursorX = sx + Math.min(Math.floor(st * 5), 7) * 6;
         }
-        fill(cx, cy, 5, 8, C.monText);
+        fill(cursorX, cursorY, 5, 8, C.monText);
       }
 
-      // Scan lines
       for (var sli = monY + 3; sli < monY + monH - 3; sli += 2) {
         ctx.fillStyle = 'rgba(26,138,58,0.04)';
         ctx.fillRect(monX + 3, sli, monW - 6, 1);
       }
     }
 
-    // Student (seated, side view)
     if (t > 0.3) {
-      var sa = Math.min((t - 0.3) * 4, 1);
-      ctx.globalAlpha = sa;
-      drawStudentSide(238, 192, 3);
+      ctx.globalAlpha = Math.min((t - 0.3) * 4, 1);
+      drawStudentSide(238, 180, 4);
       ctx.globalAlpha = 1;
     }
 
-    // Ambient: subtle monitor light on desk
     if (t > 0.8) {
       ctx.fillStyle = 'rgba(26,138,58,0.03)';
       ctx.fillRect(220, 176, 90, 6);
     }
   }
 
-  // Chart data — from reference performance plots
-  var GROUP_A_PRE = [72, 75, 70, 74, 68, 78, 50];
-  var GROUP_A_MID = [85, 88, 82, 90, 84, 87, 72];
-  var GROUP_A_AVG_PRE = 71;
-  var GROUP_A_AVG_MID = 86;
-  var GROUP_B_PRE = [84, 82, 78, 74, 68, 52, 53];
-  var GROUP_B_MID = [86, 94, 82, 83, 82, 73, 73];
-  var GROUP_B_AVG_PRE = 70;
-  var GROUP_B_AVG_MID = 82;
-  var GROUP_A_POST = [93, 85, 86, 94, 84, 88, 85];
-  var GROUP_A_AVG_POST = 87;
-  var GROUP_B_POST = [89, 95, 84, 84, 85, 80, 80];
-  var GROUP_B_AVG_POST = 85;
-
   // ── Scene 2: Week 0 — Pre-test ──
-  // 【第2个场景控制起点】从 drawScene2(t) 开始：Week 0 预实验（Pre-test）对照展示。
 
   function drawScene2(t) {
-    var LEFT_CX = 118;
-    var RIGHT_CX = 362;
-
+    var LEFT_CX = 118, RIGHT_CX = 362;
     drawSplitPanels();
 
     if (t > 0.2) {
@@ -630,7 +616,6 @@
       txt('Week 0：Pre-test', W / 2, 6, '#333333', 10, 'center');
       ctx.globalAlpha = 1;
     }
-
     if (t > 0.3) {
       ctx.globalAlpha = fadeAlpha(t, 0.3, 0.5);
       txt('Group A', LEFT_CX, 22, C.labelGrn, 9, 'center');
@@ -638,93 +623,17 @@
       ctx.globalAlpha = 1;
     }
 
-    drawOsceExamSide(LEFT_CX, t, 'Pre-test');
-    drawOsceExamSide(RIGHT_CX, t, 'Pre-test');
+    drawOsceExamSide(LEFT_CX, t, 'Pre-test', C.coatGreen, C.coatGrnSh);
+    drawOsceExamSide(RIGHT_CX, t, 'Pre-test', C.coatBlue, C.coatBluSh);
 
     if (t > 2.2) {
       var ca = fadeAlpha(t, 2.2, 0.5);
-      drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance',
-        GROUP_A_PRE, null, null, GROUP_A_AVG_PRE, null, null, 1, ca, 0);
-      drawMiniChart(RIGHT_CX, 162, 200, 92, 'Group B Performance',
-        GROUP_B_PRE, null, null, GROUP_B_AVG_PRE, null, null, 1, ca, 0);
+      drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance', GROUPS.A, 1, ca, 0);
+      drawMiniChart(RIGHT_CX, 162, 200, 92, 'Group B Performance', GROUPS.B, 1, ca, 0);
     }
   }
 
-  // ── Scene 4: Week 2 — Mid-test ──
-  // 【第4个场景控制起点】从 drawScene4(t) 开始：Week 2 中期测试结果演进。
-
-  function drawScene4(t) {
-    var LEFT_CX = 118;
-    var RIGHT_CX = 362;
-
-    drawSplitPanels();
-
-    if (t > 0.2) {
-      ctx.globalAlpha = fadeAlpha(t, 0.2, 0.4);
-      txt('Week 2：Mid-test', W / 2, 6, '#333333', 10, 'center');
-      ctx.globalAlpha = 1;
-    }
-
-    if (t > 0.3) {
-      ctx.globalAlpha = fadeAlpha(t, 0.3, 0.5);
-      txt('Group A', LEFT_CX, 22, C.labelGrn, 9, 'center');
-      txt('Group B', RIGHT_CX, 22, C.labelOrg, 9, 'center');
-      ctx.globalAlpha = 1;
-    }
-
-    drawOsceExamSide(LEFT_CX, t, 'Mid-test');
-    drawOsceExamSide(RIGHT_CX, t, 'Mid-test');
-
-    // Charts: Pre-test → Mid-test (line rises to second point)
-    if (t > 0.8) {
-      var ca = fadeAlpha(t, 0.8, 0.4);
-      var lineProg = fadeAlpha(t, 1.2, 1.4);
-      drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance',
-        GROUP_A_PRE, GROUP_A_MID, null, GROUP_A_AVG_PRE, GROUP_A_AVG_MID, null, 2, ca, lineProg);
-      drawMiniChart(RIGHT_CX, 162, 200, 92, 'Group B Performance',
-        GROUP_B_PRE, GROUP_B_MID, null, GROUP_B_AVG_PRE, GROUP_B_AVG_MID, null, 2, ca, lineProg);
-    }
-  }
-
-  // ── Scene 6: Week 4 — Final test ──
-  // 【第6个场景控制起点】从 drawScene6(t) 开始：Week 4 终测对比展示。
-
-  function drawScene6(t) {
-    var LEFT_CX = 118;
-    var RIGHT_CX = 362;
-
-    drawSplitPanels();
-
-    if (t > 0.2) {
-      ctx.globalAlpha = fadeAlpha(t, 0.2, 0.4);
-      txt('Week 4：Final test', W / 2, 6, '#333333', 10, 'center');
-      ctx.globalAlpha = 1;
-    }
-
-    if (t > 0.3) {
-      ctx.globalAlpha = fadeAlpha(t, 0.3, 0.5);
-      txt('Group A', LEFT_CX, 22, C.labelGrn, 9, 'center');
-      txt('Group B', RIGHT_CX, 22, C.labelOrg, 9, 'center');
-      ctx.globalAlpha = 1;
-    }
-
-    drawOsceExamSide(LEFT_CX, t, 'Final test');
-    drawOsceExamSide(RIGHT_CX, t, 'Final test');
-
-    // Charts: Mid-test → Post-test (line rises to third point)
-    if (t > 0.8) {
-      var ca = fadeAlpha(t, 0.8, 0.4);
-      var lineProg = fadeAlpha(t, 1.2, 1.4);
-      drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance',
-        GROUP_A_PRE, GROUP_A_MID, GROUP_A_POST,
-        GROUP_A_AVG_PRE, GROUP_A_AVG_MID, GROUP_A_AVG_POST, 3, ca, lineProg);
-      drawMiniChart(RIGHT_CX, 162, 200, 92, 'Group B Performance',
-        GROUP_B_PRE, GROUP_B_MID, GROUP_B_POST,
-        GROUP_B_AVG_PRE, GROUP_B_AVG_MID, GROUP_B_AVG_POST, 3, ca, lineProg);
-    }
-  }
-
-  // ── Training scene (Week 1 / Week 3 swap) ──
+  // ── Scene 3: Week 1 — First training ──
 
   function drawTrainingPanelAmbience(x, y, w, h, kind, t) {
     if (kind === 'digital') {
@@ -744,8 +653,8 @@
   function drawTrainingPatient(patientX, t, type, panelAlpha) {
     ctx.globalAlpha = panelAlpha;
     if (type === 'robot') {
-      drawMirrored(drawRobot, patientX, 108, 3);
-      if (t > 1.2) drawNameTag(patientX, 152, 'EasyMED', '#dceee4', C.labelGrn);
+      drawMirrored(drawRobot, patientX, 115, 4);
+      if (t > 1.2) drawNameTag(patientX, 167, 'EasyMED', '#dceee4', C.labelGrn);
       var glitch = Math.sin(t * 17.3) * Math.sin(t * 7.1);
       if (glitch > 0.85) {
         var gy = 96 + ((t * 137.5) % 38);
@@ -753,8 +662,8 @@
         ctx.fillRect(patientX - 30, gy, 60, 2);
       }
     } else {
-      drawMirrored(drawRealSP, patientX, 108, 3);
-      if (t > 1.2) drawNameTag(patientX, 152, '真人 SP', '#fff0e8', C.labelOrg);
+      drawMirrored(drawRealSP, patientX, 115, 4);
+      if (t > 1.2) drawNameTag(patientX, 167, '真人 SP', '#fff0e8', C.labelOrg);
     }
     ctx.globalAlpha = 1;
   }
@@ -794,18 +703,10 @@
     }
   }
 
-  function scene7PatientType(side, t, morphStart, morphDur) {
-    var m = Math.min(Math.max((t - morphStart) / morphDur, 0), 1);
-    if (side === 'left') return m < 0.5 ? 'robot' : 'sp';
-    return m < 0.5 ? 'sp' : 'robot';
-  }
-
   function drawTrainingScene(t, opts) {
-    var LEFT_CX = 118;
-    var RIGHT_CX = 362;
-    var STUDENT_PS = 2;
-    var LEFT_PX = 178;
-    var RIGHT_PX = 418;
+    var LEFT_CX = 118, RIGHT_CX = 362;
+    var STUDENT_PS = 3;
+    var LEFT_PX = 178, RIGHT_PX = 418;
 
     fill(0, 0, W, H, C.sceneBg);
     fill(0, 0, 236, H, C.panelLeft);
@@ -837,8 +738,12 @@
     if (t > 0.5) {
       var pa = Math.min((t - 0.5) * 4, 1);
       ctx.globalAlpha = pa;
-      drawMirrored(drawStudentFront, 62, 168, STUDENT_PS);
-      drawMirrored(drawStudentFront, 306, 168, STUDENT_PS);
+      drawMirrored(function(x, y, ps) {
+        drawStudentFrontColored(x, y, ps, C.coatGreen, C.coatGrnSh);
+      }, 62, 175, STUDENT_PS);
+      drawMirrored(function(x, y, ps) {
+        drawStudentFrontColored(x, y, ps, C.coatBlue, C.coatBluSh);
+      }, 306, 175, STUDENT_PS);
       ctx.globalAlpha = 1;
 
       drawTrainingPatient(LEFT_PX, t, opts.leftPatient, pa);
@@ -847,10 +752,10 @@
 
     if (t > 1.5) {
       ctx.globalAlpha = 0.45;
-      txt('学生 · 医生', 62, 200, '#666666', 7, 'center');
-      txt('患者', LEFT_PX, 200, opts.leftPatient === 'robot' ? C.labelGrn : C.labelOrg, 7, 'center');
-      txt('学生 · 医生', 306, 200, '#666666', 7, 'center');
-      txt('患者', RIGHT_PX, 200, opts.rightPatient === 'robot' ? C.labelGrn : C.labelOrg, 7, 'center');
+      txt('学生 · 医生', 62, 210, '#666666', 7, 'center');
+      txt('患者', LEFT_PX, 210, opts.leftPatient === 'robot' ? C.labelGrn : C.labelOrg, 7, 'center');
+      txt('学生 · 医生', 306, 210, '#666666', 7, 'center');
+      txt('患者', RIGHT_PX, 210, opts.rightPatient === 'robot' ? C.labelGrn : C.labelOrg, 7, 'center');
       ctx.globalAlpha = 1;
     }
 
@@ -859,7 +764,6 @@
   }
 
   function drawScene3(t) {
-    // 【第3个场景控制起点】Week 1 第一次训练：A 组 EasyMED，B 组真人 SP。
     drawTrainingScene(t, {
       weekTitle: 'Week 1 · 第一次训练',
       leftTrainLabel: 'EasyMED 训练',
@@ -873,8 +777,38 @@
     });
   }
 
+  // ── Scene 4: Week 2 — Mid-test ──
+
+  function drawScene4(t) {
+    var LEFT_CX = 118, RIGHT_CX = 362;
+    drawSplitPanels();
+
+    if (t > 0.2) {
+      ctx.globalAlpha = fadeAlpha(t, 0.2, 0.4);
+      txt('Week 2：Mid-test', W / 2, 6, '#333333', 10, 'center');
+      ctx.globalAlpha = 1;
+    }
+    if (t > 0.3) {
+      ctx.globalAlpha = fadeAlpha(t, 0.3, 0.5);
+      txt('Group A', LEFT_CX, 22, C.labelGrn, 9, 'center');
+      txt('Group B', RIGHT_CX, 22, C.labelOrg, 9, 'center');
+      ctx.globalAlpha = 1;
+    }
+
+    drawOsceExamSide(LEFT_CX, t, 'Mid-test', C.coatGreen, C.coatGrnSh);
+    drawOsceExamSide(RIGHT_CX, t, 'Mid-test', C.coatBlue, C.coatBluSh);
+
+    if (t > 0.8) {
+      var ca = fadeAlpha(t, 0.8, 0.4);
+      var lineProg = fadeAlpha(t, 1.2, 1.4);
+      drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance', GROUPS.A, 2, ca, lineProg);
+      drawMiniChart(RIGHT_CX, 162, 200, 92, 'Group B Performance', GROUPS.B, 2, ca, lineProg);
+    }
+  }
+
+  // ── Scene 5: Week 3 — Swap training ──
+
   function drawScene5(t) {
-    // 【第5个场景控制起点】Week 3 交换训练：A/B 两组训练对象互换。
     drawTrainingScene(t, {
       weekTitle: 'Weeks 3：交换训练',
       leftTrainLabel: '真人 SP 训练',
@@ -888,7 +822,37 @@
     });
   }
 
-  // Bar chart — Mean Score Gain (reference figure)
+  // ── Scene 6: Week 4 — Final test ──
+
+  function drawScene6(t) {
+    var LEFT_CX = 118, RIGHT_CX = 362;
+    drawSplitPanels();
+
+    if (t > 0.2) {
+      ctx.globalAlpha = fadeAlpha(t, 0.2, 0.4);
+      txt('Week 4：Final test', W / 2, 6, '#333333', 10, 'center');
+      ctx.globalAlpha = 1;
+    }
+    if (t > 0.3) {
+      ctx.globalAlpha = fadeAlpha(t, 0.3, 0.5);
+      txt('Group A', LEFT_CX, 22, C.labelGrn, 9, 'center');
+      txt('Group B', RIGHT_CX, 22, C.labelOrg, 9, 'center');
+      ctx.globalAlpha = 1;
+    }
+
+    drawOsceExamSide(LEFT_CX, t, 'Final test', C.coatGreen, C.coatGrnSh);
+    drawOsceExamSide(RIGHT_CX, t, 'Final test', C.coatBlue, C.coatBluSh);
+
+    if (t > 0.8) {
+      var ca = fadeAlpha(t, 0.8, 0.4);
+      var lineProg = fadeAlpha(t, 1.2, 1.4);
+      drawMiniChart(LEFT_CX, 162, 200, 92, 'Group A Performance', GROUPS.A, 3, ca, lineProg);
+      drawMiniChart(RIGHT_CX, 162, 200, 92, 'Group B Performance', GROUPS.B, 3, ca, lineProg);
+    }
+  }
+
+  // ── Bar chart — Mean Score Gain ──
+
   var GAIN_BARS = [
     { v: 16.58, c: C.barHumanSP, g: 0 },
     { v: 21.83, c: C.barEasyMED, g: 0 },
@@ -899,10 +863,7 @@
   var GAIN_ARROW_BAR = 1;
 
   function drawGainBarChart(barProg) {
-    var chartX = 32;
-    var chartY = 158;
-    var chartW = 416;
-    var chartH = 104;
+    var chartX = 32, chartY = 158, chartW = 416, chartH = 104;
     var plotBottom = chartY + chartH - 22;
     var plotTop = chartY + 22;
     var plotH = plotBottom - plotTop;
@@ -929,15 +890,13 @@
     txt('Low Baseline', 128, plotBottom + 6, '#666666', 7, 'center');
     txt('High Baseline', 338, plotBottom + 6, '#666666', 7, 'center');
 
-    // Legend
     fill(chartX + chartW - 118, chartY + 18, 10, 8, C.barHumanSP);
     txt('Human SP', chartX + chartW - 104, chartY + 18, '#555555', 6);
     fill(chartX + chartW - 118, chartY + 30, 10, 8, C.barEasyMED);
     txt('EasyMED', chartX + chartW - 104, chartY + 30, '#555555', 6);
 
     var prog = Math.min(Math.max(barProg, 0), 1);
-    var arrowBarTop = 0;
-    var arrowBarX = 0;
+    var arrowBarTop = 0, arrowBarX = 0;
 
     GAIN_BARS.forEach(function(bar, i) {
       var bx = GAIN_BAR_X[i] - barW / 2;
@@ -974,10 +933,8 @@
     });
 
     if (prog > 0.05 && arrowBarX > 0) {
-      var ax0 = arrowBarX - 42;
-      var ay0 = arrowBarTop - 6;
-      var ax1 = arrowBarX - 6;
-      var ay1 = arrowBarTop - 2;
+      var ax0 = arrowBarX - 42, ay0 = arrowBarTop - 6;
+      var ax1 = arrowBarX - 6, ay1 = arrowBarTop - 2;
       ctx.strokeStyle = '#c0392b';
       ctx.fillStyle = '#c0392b';
       ctx.lineWidth = 1.5;
@@ -995,17 +952,18 @@
   }
 
   // ── Scene 7: Week 1-4 — Novices Improve Fast ──
-  // 【第7个场景控制起点】从 drawScene7(t) 开始：人物形态切换 + 总体增益柱状图。
+
+  function scene7PatientType(side, t, morphStart, morphDur) {
+    var m = Math.min(Math.max((t - morphStart) / morphDur, 0), 1);
+    if (side === 'left') return m < 0.5 ? 'robot' : 'sp';
+    return m < 0.5 ? 'sp' : 'robot';
+  }
 
   function drawScene7(t) {
-    var LEFT_CX = 118;
-    var RIGHT_CX = 362;
-    var STUDENT_PS = 2;
-    var PATIENT_PS = 3;
-    var PATIENT_X_L = 178;
-    var PATIENT_X_R = 418;
-    var MORPH_START = 2;
-    var MORPH_DUR = 1.2;
+    var LEFT_CX = 118, RIGHT_CX = 362;
+    var STUDENT_PS = 3, PATIENT_PS = 4;
+    var PATIENT_X_L = 178, PATIENT_X_R = 418;
+    var MORPH_START = 2, MORPH_DUR = 1.2;
 
     drawSplitPanels();
 
@@ -1014,7 +972,6 @@
       txt('Week 1-4：Novices Improve Fast', W / 2, 6, '#333333', 9, 'center');
       ctx.globalAlpha = 1;
     }
-
     if (t > 0.3) {
       ctx.globalAlpha = fadeAlpha(t, 0.3, 0.5);
       txt('Group A', LEFT_CX, 22, C.labelGrn, 9, 'center');
@@ -1032,32 +989,33 @@
       ctx.save();
       drawMirrored(function(x, y, ps) {
         drawStudentFrontColored(x, y, ps, C.coatGreen, C.coatGrnSh);
-      }, 62, 100, STUDENT_PS);
+      }, 62, 105, STUDENT_PS);
       drawMirrored(function(x, y, ps) {
         drawStudentFrontColored(x, y, ps, C.coatBlue, C.coatBluSh);
-      }, 306, 100, STUDENT_PS);
+      }, 306, 105, STUDENT_PS);
       ctx.restore();
 
-      drawPatientCrossfade(PATIENT_X_L, 52, PATIENT_PS, t, MORPH_START, MORPH_DUR, true);
-      drawPatientCrossfade(PATIENT_X_R, 52, PATIENT_PS, t, MORPH_START, MORPH_DUR, false);
+      drawPatientCrossfade(PATIENT_X_L, 58, PATIENT_PS, t, MORPH_START, MORPH_DUR, true);
+      drawPatientCrossfade(PATIENT_X_R, 58, PATIENT_PS, t, MORPH_START, MORPH_DUR, false);
 
       ctx.globalAlpha = 1;
     }
 
     var scene7DialogueLayout = {
-      bubbleStudentY: 72,
-      textStudentY: 76,
-      bubbleAnsY: 16,
-      textAnsY: 20,
-      textAnsY2: 33
+      bubbleStudentY: 72, textStudentY: 76,
+      bubbleAnsY: 16, textAnsY: 20, textAnsY2: 33
     };
     drawTrainingDialogue('left', t, scene7PatientType('left', t, MORPH_START, MORPH_DUR), scene7DialogueLayout);
     drawTrainingDialogue('right', t, scene7PatientType('right', t, MORPH_START, MORPH_DUR), scene7DialogueLayout);
 
-    var barGrowDur = Math.max(SCENE7_DUR - SCENE7_BAR_HOLD - 0.3, 1);
-    var barProg = fadeAlpha(t, 0.3, barGrowDur);
+    var BAR_GROW_DUR = 2.5;
+    var barProg = fadeAlpha(t, 0.3, BAR_GROW_DUR);
     drawGainBarChart(barProg);
   }
+
+  // ── Scene router ──
+
+  const sceneFns = [drawScene1, drawScene2, drawScene3, drawScene4, drawScene5, drawScene6, drawScene7];
 
   function crossFade(elapsed, transStart, drawFrom, tFrom, drawTo, tTo) {
     var tt = (elapsed - transStart) / TRANS_DUR;
@@ -1072,6 +1030,47 @@
     }
   }
 
+  function renderAt(elapsed) {
+    ctx.imageSmoothingEnabled = false;
+    ctx.clearRect(0, 0, W, H);
+
+    // Scene 1 fade-in
+    if (elapsed < sceneEnd[0]) {
+      var fadeIn = Math.min(elapsed * 2, 1);
+      ctx.globalAlpha = fadeIn;
+      drawScene1(elapsed);
+      ctx.globalAlpha = 1;
+      return;
+    }
+
+    // Scenes 1-7 with transitions
+    for (var i = 0; i < 6; i++) {
+      // Transition i -> i+1
+      if (elapsed < transEnd[i]) {
+        var prevStart = i === 0 ? 0 : transEnd[i - 1];
+        crossFade(elapsed, sceneEnd[i], sceneFns[i], sceneEnd[i] - prevStart, sceneFns[i + 1], 0);
+        return;
+      }
+      // Scene i+1
+      if (elapsed < sceneEnd[i + 1]) {
+        sceneFns[i + 1](elapsed - transEnd[i]);
+        return;
+      }
+    }
+
+    // Transition 6->end (fade out after scene 7)
+    if (elapsed < FADE_END) {
+      var ft = (elapsed - sceneEnd[6]) / (FADE_END - sceneEnd[6]);
+      drawScene7(sceneEnd[6] - transEnd[5]);
+      ctx.fillStyle = 'rgba(255,255,255,' + Math.min(ft * 1.5, 1) + ')';
+      ctx.fillRect(0, 0, W, H);
+    }
+  }
+
+  // ── Playback Controls (cached DOM refs) ──
+
+  var $slider = null, $cur = null, $btn = null, $total = null;
+
   function formatTime(sec) {
     var s = Math.max(0, Math.min(sec, TOTAL));
     var m = Math.floor(s / 60);
@@ -1079,129 +1078,80 @@
     return m + ':' + (r < 10 ? '0' : '') + r;
   }
 
-  function renderAt(elapsed) {
-    ctx.imageSmoothingEnabled = false; // 关闭平滑，保持像素风格
-    ctx.clearRect(0, 0, W, H); // 每帧先清空画布，防止残影
-
-    // 总控：根据当前时间 elapsed 路由到“第几个场景”或“第几个转场”
-    if (elapsed < SCENE1_END) {
-      // 第1场景：开场淡入
-      var fadeIn = Math.min(elapsed * 2, 1); // 计算淡入透明度
-      ctx.globalAlpha = fadeIn; // 应用透明度
-      drawScene1(elapsed); // 绘制第1场景
-      ctx.globalAlpha = 1; // 还原透明度
-    } else if (elapsed < TRANS1_END) {
-      // 第1->第2转场控制
-      crossFade(elapsed, SCENE1_END, drawScene1, SCENE1_END, drawScene2, 0); // 白色交叉淡化切场
-    } else if (elapsed < SCENE2_END) {
-      // 第2场景控制
-      drawScene2(elapsed - TRANS1_END); // 传入该场景内部相对时间
-    } else if (elapsed < TRANS2_END) {
-      // 第2->第3转场控制
-      crossFade(elapsed, SCENE2_END, drawScene2, SCENE2_END - TRANS1_END, drawScene3, 0);
-    } else if (elapsed < SCENE3_END) {
-      // 第3场景控制
-      drawScene3(elapsed - TRANS2_END);
-    } else if (elapsed < TRANS3_END) {
-      // 第3->第4转场控制
-      crossFade(elapsed, SCENE3_END, drawScene3, SCENE3_END - TRANS2_END, drawScene4, 0);
-    } else if (elapsed < SCENE4_END) {
-      // 第4场景控制
-      drawScene4(elapsed - TRANS3_END);
-    } else if (elapsed < TRANS4_END) {
-      // 第4->第5转场控制
-      crossFade(elapsed, SCENE4_END, drawScene4, SCENE4_END - TRANS3_END, drawScene5, 0);
-    } else if (elapsed < SCENE5_END) {
-      // 第5场景控制
-      drawScene5(elapsed - TRANS4_END);
-    } else if (elapsed < TRANS5_END) {
-      // 第5->第6转场控制
-      crossFade(elapsed, SCENE5_END, drawScene5, SCENE5_END - TRANS4_END, drawScene6, 0);
-    } else if (elapsed < SCENE6_END) {
-      // 第6场景控制
-      drawScene6(elapsed - TRANS5_END);
-    } else if (elapsed < TRANS6_END) {
-      // 第6->第7转场控制
-      crossFade(elapsed, SCENE6_END, drawScene6, SCENE6_END - TRANS5_END, drawScene7, 0);
-    } else if (elapsed < SCENE7_END) {
-      // 第7场景控制
-      drawScene7(elapsed - TRANS6_END);
-    } else {
-      // 片尾淡出控制：第7场景停留后整体白色淡出
-      var ft = (elapsed - SCENE7_END) / (FADE_END - SCENE7_END); // 片尾淡出进度
-      drawScene7(SCENE7_END - TRANS6_END); // 固定绘制第7场景的最终状态
-      ctx.fillStyle = 'rgba(255,255,255,' + Math.min(ft * 1.5, 1) + ')'; // 叠加白色遮罩
-      ctx.fillRect(0, 0, W, H); // 渲染遮罩
-    }
-  }
-
   function updateProgressUI() {
-    var slider = document.getElementById('progress'); // 获取进度条 DOM
-    var cur = document.getElementById('time-cur'); // 获取当前时间 DOM
-    if (!slider || !cur) return; // DOM 不存在时直接退出
-    if (!isScrubbing) slider.value = String(playbackTime); // 非拖拽时，同步进度条位置
-    cur.textContent = formatTime(playbackTime); // 刷新当前时间文案
+    if (!$slider || !$cur) return;
+    if (!isScrubbing) $slider.value = String(playbackTime);
+    $cur.textContent = formatTime(playbackTime);
   }
 
   function initPlaybackControls() {
-    var slider = document.getElementById('progress'); // 进度条
-    var btn = document.getElementById('btn-play'); // 播放按钮
-    var total = document.getElementById('time-total'); // 总时长标签
-    if (!slider || !btn || !total) return; // 任一节点不存在则不初始化
+    $slider = document.getElementById('progress');
+    $btn = document.getElementById('btn-play');
+    $cur = document.getElementById('time-cur');
+    $total = document.getElementById('time-total');
+    if (!$slider || !$btn || !$total) return;
 
-    slider.max = String(TOTAL); // 进度条最大值 = 总时长
-    slider.value = '0'; // 初始从 0 秒开始
-    total.textContent = formatTime(TOTAL); // 显示总时长
+    $slider.max = String(TOTAL);
+    $slider.value = '0';
+    $total.textContent = formatTime(TOTAL);
 
     function setPlayIcon() {
-      btn.textContent = isPlaying ? '\u23F8' : '\u25B6'; // 播放状态显示暂停图标，暂停状态显示播放图标
-      btn.setAttribute('aria-label', isPlaying ? '暂停' : '播放'); // 更新无障碍标签
+      $btn.textContent = isPlaying ? '⏸' : '▶';
+      $btn.setAttribute('aria-label', isPlaying ? '暂停' : '播放');
     }
 
-    btn.addEventListener('click', function() {
-      isPlaying = !isPlaying; // 切换播放状态
-      lastFrameTs = null; // 重置时间戳，避免恢复时跳帧
-      setPlayIcon(); // 同步按钮图标
+    $btn.addEventListener('click', function() {
+      isPlaying = !isPlaying;
+      lastFrameTs = null;
+      needsRedraw = true;
+      setPlayIcon();
     });
 
-    slider.addEventListener('pointerdown', function() {
-      isScrubbing = true; // 标记“正在拖拽进度条”，暂停自动推进
+    $slider.addEventListener('pointerdown', function() {
+      isScrubbing = true;
+      needsRedraw = true;
     });
 
-    slider.addEventListener('input', function() {
-      playbackTime = parseFloat(slider.value) || 0; // 拖动时即时更新播放时间
-      updateProgressUI(); // 实时刷新 UI
+    $slider.addEventListener('input', function() {
+      playbackTime = parseFloat($slider.value) || 0;
+      needsRedraw = true;
+      updateProgressUI();
     });
 
-    slider.addEventListener('pointerup', function() {
-      isScrubbing = false; // 结束拖拽
-      lastFrameTs = null; // 重置时间戳，恢复后按当前时刻平滑继续
+    $slider.addEventListener('pointerup', function() {
+      isScrubbing = false;
+      lastFrameTs = null;
+      needsRedraw = true;
     });
 
-    slider.addEventListener('change', function() {
-      isScrubbing = false; // 兼容 change 事件结束状态
-      playbackTime = parseFloat(slider.value) || 0; // 最终确认进度值
-      lastFrameTs = null; // 重置时间戳
-      updateProgressUI(); // 刷新显示
+    $slider.addEventListener('change', function() {
+      isScrubbing = false;
+      playbackTime = parseFloat($slider.value) || 0;
+      lastFrameTs = null;
+      needsRedraw = true;
+      updateProgressUI();
     });
 
-    setPlayIcon(); // 初始化按钮图标
-    updateProgressUI(); // 初始化时间与进度显示
+    setPlayIcon();
+    updateProgressUI();
   }
 
   // ── Main Loop ──
 
   function frame(ts) {
-    // 主循环时间推进控制：
-    // 仅在“播放中且未拖拽”时，才根据帧间隔累加播放时间。
     if (lastFrameTs != null && isPlaying && !isScrubbing) {
       playbackTime += (ts - lastFrameTs) / 1000;
       if (playbackTime >= TOTAL) playbackTime = 0;
+      needsRedraw = true;
     }
     lastFrameTs = ts;
 
-    renderAt(playbackTime);
-    updateProgressUI();
+    if (needsRedraw) {
+      renderAt(playbackTime);
+      updateProgressUI();
+      needsRedraw = false;
+    }
+
     requestAnimationFrame(frame);
   }
 
